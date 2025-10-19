@@ -1,0 +1,10 @@
+.compact {
+  font-size: 0.8em;
+  margin: 2px 0;
+}
+
+.full {
+  font-size: 1em;
+  margin: 5px 0;
+  font-weight: bold;
+}
