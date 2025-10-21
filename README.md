@@ -36,6 +36,14 @@ npm install
 
 Configure the module in your `config.js` file.
 
+### Update
+
+```sh
+cd ~/MagicMirror/modules/MMM-Synology-Download_Station
+git pull
+npm ci
+```
+
 
 ## Using the module
 
@@ -46,7 +54,7 @@ To use this module, add it to the modules array in the `config/config.js` file.
 modules: [
   {
     module: 'MMM-Synology-Download_Station',
-    position: 'left_bottom',
+    position: 'top_center',
     header: 'Download Station',
     config: {
       host: 'my.synology-ds.com',
