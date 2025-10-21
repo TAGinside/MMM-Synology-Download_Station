@@ -34,7 +34,6 @@ cd MMM-Synology-Download_Station
 Install the node dependencies.
 ```
 npm install
-npm install synology-api
 ```
 
 Configure the module in your `config.js` file.
