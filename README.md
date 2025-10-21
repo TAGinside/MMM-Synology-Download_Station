@@ -1,4 +1,6 @@
-test32# Module: MMM-Synology-Download_Station
+# Synology Download Station
+Module: MMM-Synology-Download_Station
+
 This [MagicMirror](https://github.com/MichMich/MagicMirror) module, display Synology Download Station tasks.
 
 None compacted mode : <code>bottom_center</code>
@@ -36,7 +38,7 @@ npm install
 
 Configure the module in your `config.js` file.
 
-### Update
+## Update
 
 ```sh
 cd ~/MagicMirror/modules/MMM-Synology-Download_Station
