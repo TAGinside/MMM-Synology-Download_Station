@@ -26,9 +26,11 @@ git clone https://github.com/TAGinside/MMM-Synology-Download_Station
 ```
 
 Navigate to the new `MMM-Synology-Download_Station`:
+```
 cd MMM-MQTT
 ```
 Install the node dependencies.
+```
 npm install
 ```
 
