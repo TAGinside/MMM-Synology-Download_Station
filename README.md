@@ -11,7 +11,7 @@ Compacted mode : <code>bottom_left</code>
 
 ![Synology DS visualisation 2](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/gh-pages/.github/screenshot-02.png?raw=true)
 
-## Dependencies
+## Dependencies 
 - An installation of [MagicMirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
 - [synology-api](https://www.npmjs.com/package/synology-api)
 
@@ -34,6 +34,7 @@ cd MMM-Synology-Download_Station
 Install the node dependencies.
 ```
 npm install
+npm install synology-api
 ```
 
 Configure the module in your `config.js` file.
