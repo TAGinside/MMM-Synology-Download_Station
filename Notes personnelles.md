@@ -5,6 +5,15 @@ cd ~/MagicMirror/
 npm start
 ```
 
+# suppression complète du module et réinstallation en une fois
+```
+cd ~/MagicMirror/modules
+rm -rf MMM-Synology-Download_Station
+git clone https://github.com/TAGinside/MMM-Synology-Download_Station
+cd MMM-Synology-Download_Station
+npm install
+```
+
 # Update Magic mirror
 
 Update Magic mirror
