@@ -22,6 +22,10 @@ cd ~/MagicMirror/
 git pull && node --run install-mm
 ```
 
+# explication comment creer un user dédié pour synology d'abord
+
+ne pas oublié de faire ça
+
 ## Update node.js
 
 Je pense que pour que mon module fonctionne il faut la verison 20 de node.js

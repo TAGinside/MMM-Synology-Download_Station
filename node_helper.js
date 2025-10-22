@@ -1,11 +1,11 @@
 const NodeHelper = require("node_helper");
 const axios = require("axios");
 const https = require("https");
+const querystring = require("querystring");
 
 module.exports = NodeHelper.create({
   start() {
     console.log("MMM-Synology-Download_Station helper lancé");
-    this.sid = null;
   },
 
   socketNotificationReceived(notification, payload) {
@@ -22,8 +22,8 @@ module.exports = NodeHelper.create({
 
       this.session = axios.create({
         baseURL: this.baseUrl,
-        timeout: 10000,
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }) // Autoriser cert. auto-signés
+        timeout: 60000, // timeout 60s pour tolérer latence réseau
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }) // gestion certificat auto-signé
       });
 
     } else if (notification === "GET_TASKS") {
@@ -33,47 +33,29 @@ module.exports = NodeHelper.create({
 
   async login() {
     try {
-      const response = await this.session.get("/auth.cgi", {
-        params: {
-          api: "SYNO.API.Auth",
-          method: "login",
-          version: "7",
-          account: this.config.user,
-          passwd: this.config.passwd,
-          session: "DownloadStation",
-          format: "sid"
-        }
+      // Encodage manuel des paramètres pour éviter erreurs
+      const params = querystring.stringify({
+        api: "SYNO.API.Auth",
+        method: "login",
+        version: "7",
+        account: this.config.user,
+        passwd: this.config.passwd,
+        session: "DownloadStation",
+        format: "sid"
       });
+
+      const response = await this.session.get(`/auth.cgi?${params}`);
+
       if (response.data && response.data.success) {
-        this.sid = response.data.data.sid;
         console.log("Connexion OK, SID récupéré");
-        return true;
+        return response.data.data.sid;
       } else {
         console.error("Connexion échouée :", response.data);
-        return false;
+        return null;
       }
     } catch (error) {
-      console.error("Erreur login API Synology :", error);
-      return false;
-    }
-  },
-
-  async logout() {
-    if (!this.sid) return;
-    try {
-      await this.session.get("/auth.cgi", {
-        params: {
-          api: "SYNO.API.Auth",
-          method: "logout",
-          version: "7",
-          session: "DownloadStation",
-          sid: this.sid
-        }
-      });
-      console.log("Déconnexion OK");
-      this.sid = null;
-    } catch (error) {
-      console.error("Erreur logout :", error);
+      console.error("Erreur login API Synology :", error.message || error);
+      return null;
     }
   },
 
@@ -83,7 +65,8 @@ module.exports = NodeHelper.create({
       return;
     }
 
-    if (!(await this.login())) {
+    const sid = await this.login();
+    if (!sid) {
       this.sendSocketNotification("TASKS_DATA", []);
       return;
     }
@@ -94,7 +77,7 @@ module.exports = NodeHelper.create({
           api: "SYNO.DownloadStation.Task",
           method: "list",
           version: "1",
-          _sid: this.sid
+          _sid: sid
         }
       });
 
@@ -104,10 +87,8 @@ module.exports = NodeHelper.create({
         this.sendSocketNotification("TASKS_DATA", []);
       }
     } catch (error) {
-      console.error("Erreur récupération tâches :", error);
+      console.error("Erreur récupération tâches :", error.message || error);
       this.sendSocketNotification("TASKS_DATA", []);
-    } finally {
-      await this.logout();
     }
   }
 });
