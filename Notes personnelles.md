@@ -18,11 +18,11 @@ git pull && node --run install-mm
 Je pense que pour que mon module fonctionne il faut la verison 20 de node.js
 Installez ou utilisez une autre version de Node.js, par exemple la version 20 (LTS) :
 ```
-nvm install 20
-nvm use 20
-nvm alias default 20
+nvm install 22
+nvm use 22
+nvm alias default 22
 ```
-Vérifiez que vous utilisez bien la version 20 :
+Vérifiez que vous utilisez bien la version 22.18 ou plus haut mais pas la 23 :
 ```
 node -v
 ```
@@ -67,3 +67,10 @@ npm install - `clean install`
 ```
 npm ci
 ```
+
+Fait important si le node.js est trop vieux ou pas adapté la commande suivante NE FONCTIONNE PAS
+```
+node --run install-mm
+```
+
+impossible d'installer le Magic Mirror
