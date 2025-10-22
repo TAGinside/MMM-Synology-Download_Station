@@ -65,6 +65,8 @@ module.exports = NodeHelper.create({
     }
 
     const sid = await this.login();
+    console.log("SID récupéré et utilisé :", sid);
+
     if (!sid) {
       this.sendSocketNotification("TASKS_DATA", []);
       return;
