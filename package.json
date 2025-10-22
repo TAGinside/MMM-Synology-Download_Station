@@ -6,6 +6,6 @@
   "author": "TAGinside",
   "license": "MIT",
   "dependencies": {
-    "synology-api": "^1.0.8",
+    "synology-api": "^1.0.8"
     "colors": "^1.4.0"
 }
