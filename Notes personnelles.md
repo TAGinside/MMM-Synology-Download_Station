@@ -16,13 +16,23 @@ git pull && node --run install-mm
 ## Update node.js
 
 Je pense que pour que mon module fonctionne il faut la verison 20 de node.js
-
+Installez ou utilisez une autre version de Node.js, par exemple la version 20 (LTS) :
 ```
-curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt install -y nodejs
-cd ~/MagicMirror/
-git pull
-npm run install-mm
+nvm install 20
+nvm use 20
+nvm alias default 20
+```
+Vérifiez que vous utilisez bien la version 20 :
+```
+node -v
+```
+Une fois que la version 23 n'est plus active, désinstallez-la avec :
+```
+nvm uninstall 23
+```
+Ensuite, pour vérifier que la désinstallation a réussi, listez les versions encore installées avec :
+```
+nvm ls
 ```
 
 ## backup/restaure
@@ -38,7 +48,7 @@ bash -c  "$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror-back
 ```
 
 
-### Notes A part
+# Notes A part
 Après avoir fait `npm install` api synology
 
 ```
