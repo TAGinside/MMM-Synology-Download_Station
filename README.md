@@ -55,18 +55,16 @@ To use this module, add it to the modules array in the `config/config.js` file.
 ```javascript
 modules: [
   {
-    module: 'MMM-Synology-Download_Station',
-    position: 'top_center',
-    header: 'Download Station',
-    config: {
-      host: 'my.synology-ds.com',
-      port: '5000', // Server port (not required if default port (5000) is used)
-      user: 'account',
-      passwd: 'password',
-      refreshInterval: 10, // in seconds
-      compactMode: true, // recommanded in left or right position.
-    }
-  },
+  module: 'MMM-Synology-Download_Station',
+  position: 'top_center',
+  config: {
+    host: 'IP/DNS',     // IP/DNS de votre Synology
+    port: 5001,         // Port HTTPS DSM default
+    useHttps: true,     // Using HTTPS to connect to DSM
+    user: 'username',           
+    passwd: 'password'          
+  }
+}
 ]
 ```
 
