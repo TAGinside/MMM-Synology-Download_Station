@@ -37,6 +37,8 @@ git pull && node --run install-mm
 
 ## Update node.js
 
+Je pense que pour que mon module fonctionne il faut la verison 20 de node.js
+
 ```
 curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
