@@ -46,3 +46,15 @@ cd ~/MagicMirror/
 git pull
 npm run install-mm
 ```
+
+## backup/restaure
+
+Faire Backup
+```
+bash -c  "$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror-backup-restore/main/mm_backup.sh)" with any parms
+```
+
+Faire Restauration
+```
+bash -c  "$(curl -sL https://raw.githubusercontent.com/sdetweil/MagicMirror-backup-restore/main/mm_restore.sh)" with any parms
+```
