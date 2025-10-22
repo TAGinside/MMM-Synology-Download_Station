@@ -22,8 +22,8 @@ module.exports = NodeHelper.create({
 
       this.session = axios.create({
         baseURL: this.baseUrl,
-        timeout: 60000, // timeout 60s pour tolérer latence réseau
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }) // gestion certificat auto-signé
+        timeout: 60000, // délai 60 secondes pour tolérer latence réseau
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }) // prise en charge des certificats auto-signés
       });
 
     } else if (notification === "GET_TASKS") {
@@ -33,7 +33,6 @@ module.exports = NodeHelper.create({
 
   async login() {
     try {
-      // Encodage manuel des paramètres pour éviter erreurs
       const params = querystring.stringify({
         api: "SYNO.API.Auth",
         method: "login",
@@ -80,6 +79,9 @@ module.exports = NodeHelper.create({
           _sid: sid
         }
       });
+
+      // Log complet de la réponse JSON pour debug
+      console.log("Réponse API tâches (brute) :", JSON.stringify(response.data, null, 2));
 
       if (response.data && response.data.success) {
         this.sendSocketNotification("TASKS_DATA", response.data.data.tasks);
