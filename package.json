@@ -6,7 +6,6 @@
   "author": "TAGinside",
   "license": "MIT",
   "dependencies": {
-    "synology-api": "^1.0.8",   // version 1.0.8 de synology-api minimum
-    "colors": "^1.4.0"          // version 1.4.0 de colors minimum  
-  }
+    "synology-api": "^1.0.8",
+    "colors": "^1.4.0"
 }
