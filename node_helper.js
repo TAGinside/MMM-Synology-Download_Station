@@ -1,5 +1,7 @@
 const NodeHelper = require("node_helper");
 const Synology = require("synology-api");
+const FileType = require('file-type');
+const fs = require('fs');
 
 module.exports = NodeHelper.create({
   start: function () {
@@ -24,8 +26,9 @@ module.exports = NodeHelper.create({
       );
       console.log("Connexion à Synology API initialisée");
     } else if (notification === "GET_TASKS") {
-      console.log("Requête pour récupérer les tâches...");
       this.getDownloadStationTasks();
+    } else if (notification === "DETECT_FILE_TYPE") {
+      this.detectFileType(payload); // payload = chemin fichier local
     }
   },
 
@@ -37,16 +40,13 @@ module.exports = NodeHelper.create({
 
     console.log("Connexion à Synology pour récupération des tâches...");
     this.syno.Auth.Connect().then(() => {
-      console.log("Connexion réussie, récupération des tâches...");
       return this.syno.DS.getTasks();
     }).then((response) => {
       console.log("Réponse API reçu :", response);
       if (response && response.success) {
         let tasks = [];
         const allTasks = response.data.tasks || [];
-        console.log(`Nombre de tâches récupérées : ${allTasks.length}`);
         allTasks.forEach(task => {
-          console.log("Tâche :", task);
           tasks.push({
             title: task.title,
             status: task.status,
@@ -55,13 +55,26 @@ module.exports = NodeHelper.create({
         });
         this.sendSocketNotification("TASKS_DATA", tasks);
       } else {
-        console.log("Aucune tâche ou réponse API échouée");
         this.sendSocketNotification("TASKS_DATA", []);
       }
       return this.syno.Auth.Logout();
     }).catch((error) => {
-      console.error("Erreur lors de la connexion ou récupération :", error);
+      console.error("Erreur Synology API :", error);
       this.sendSocketNotification("TASKS_DATA", []);
     });
+  },
+
+  // Nouvelle fonction pour détecter le type MIME d’un fichier avec file-type
+  detectFileType: async function (filePath) {
+    try {
+      const stream = fs.createReadStream(filePath);
+      const fileType = await FileType.fromStream(stream);
+      console.log(`Type détecté pour ${filePath} :`, fileType);
+      this.sendSocketNotification("FILE_TYPE_DETECTED", { filePath, fileType });
+    } catch (error) {
+      console.error("Erreur détection type fichier :", error);
+      this.sendSocketNotification("FILE_TYPE_DETECTED", { filePath, fileType: null });
+    }
   }
+
 });
