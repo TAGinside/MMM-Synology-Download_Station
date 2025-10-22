@@ -38,7 +38,7 @@ git pull && node --run install-mm
 ## Update node.js
 
 ```
-curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 cd ~/MagicMirror/
 git pull
