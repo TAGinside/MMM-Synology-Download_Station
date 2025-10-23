@@ -10,7 +10,7 @@ Module.register("MMM-Synology-Download_Station", {
     this.tasks = [];
     this.sendSocketNotification("CONFIG", this.config);
 
-    // Envoie la notification CHECK_API pour vérifier la présence de l'API
+    //Envoie la notification CHECK_API pour vérifier la présence de l'API
     this.sendSocketNotification("CHECK_API");
 
     this.getTasks();
