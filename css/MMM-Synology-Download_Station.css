@@ -1,33 +1,21 @@
-.synology-download-station {
+.synology-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: Arial, sans-serif;
-}
-
-.synology-download-station th,
-.synology-download-station td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.synology-download-station th {
-  background-color: #333;
+  font-size: 14px;
   color: white;
+}
+
+.synology-table th, 
+.synology-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #444;
+}
+
+.synology-table th {
+  border-bottom: 2px solid #888;
   text-align: left;
 }
 
-.synology-download-station tr:nth-child(even) {
-  background-color: #f9f9f9;
-}
-
-.synology-download-station tr:hover {
-  background-color: #ddd;
-}
-
-.dimmed {
-  color: #888;
-}
-
-.small {
-  font-size: 0.9em;
+.status-icon {
+  width: 25px;
 }
