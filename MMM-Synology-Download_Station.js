@@ -4,21 +4,19 @@ Module.register("MMM-Synology-Download_Station", {
     maxItems: 10,
     compactMode: false,
     displayColumns: {
-      title: true,
       status_icon: true,
+      title: true,
       percent_completed: true,
+      size: true,
       speed_download: true,
-      speed_upload: true,
-      size: true
+      speed_upload: true
     },
     displayTasks: {
-      finished: true,
-      downloading: true,
-      waiting: true,
-      hash_checking: true,
-      paused: true,
       seeding: true,
-      error: true
+      downloading: true,
+      finished: true,
+      error: true,
+      paused: true
     }
   },
 
@@ -42,7 +40,6 @@ Module.register("MMM-Synology-Download_Station", {
   socketNotificationReceived(notification, payload) {
     if (notification === "TASKS_DATA") {
       if (payload && Array.isArray(payload)) {
-        // Filtrer les tâches selon le statut et la config
         this.tasks = payload.filter(task =>
           this.config.displayTasks[task.status] !== false
         ).slice(0, this.config.maxItems);
@@ -55,21 +52,23 @@ Module.register("MMM-Synology-Download_Station", {
 
   getDom() {
     const wrapper = document.createElement("div");
+    wrapper.className = "synology-wrapper";
+
     if (!this.tasks.length) {
-      wrapper.innerHTML = "<em>Aucune tâche Download Station</em>";
+      wrapper.innerHTML = "<div class='no-tasks'>Aucune tâche en cours</div>";
       return wrapper;
     }
 
     const table = document.createElement("table");
     table.className = "synology-table";
 
-    // En-tête
+    // La ligne d'en-tête
     const thead = document.createElement("thead");
     const trHead = document.createElement("tr");
 
     if (this.config.displayColumns.status_icon) {
       const thIcon = document.createElement("th");
-      thIcon.textContent = "";
+      thIcon.style.width = "30px";
       trHead.appendChild(thIcon);
     }
     if (this.config.displayColumns.title) {
@@ -101,18 +100,17 @@ Module.register("MMM-Synology-Download_Station", {
     thead.appendChild(trHead);
     table.appendChild(thead);
 
-    // Corps
+    // Corps du tableau
     const tbody = document.createElement("tbody");
-
     this.tasks.forEach(task => {
       const tr = document.createElement("tr");
 
+      // Icône statut
       if (this.config.displayColumns.status_icon) {
         const tdIcon = document.createElement("td");
-        tdIcon.className = "status-icon";
+        tdIcon.style.textAlign = "center";
 
-        // Exemple d’icône en fonction du statut
-        let icon = "⏳"; // par défaut
+        let icon = "⏳"; // default
         switch (task.status) {
           case "downloading": icon = "⬇️"; break;
           case "seeding": icon = "⬆️"; break;
@@ -124,12 +122,14 @@ Module.register("MMM-Synology-Download_Station", {
         tr.appendChild(tdIcon);
       }
 
+      // Titre
       if (this.config.displayColumns.title) {
         const tdTitle = document.createElement("td");
-        tdTitle.textContent = task.title;
+        tdTitle.textContent = task.title || "Inconnu";
         tr.appendChild(tdTitle);
       }
 
+      // % avancé
       if (this.config.displayColumns.percent_completed) {
         const tdPercent = document.createElement("td");
         tdPercent.textContent =
@@ -140,6 +140,7 @@ Module.register("MMM-Synology-Download_Station", {
         tr.appendChild(tdPercent);
       }
 
+      // Vitesse download
       if (this.config.displayColumns.speed_download) {
         const tdSpeedD = document.createElement("td");
         tdSpeedD.textContent =
@@ -150,6 +151,7 @@ Module.register("MMM-Synology-Download_Station", {
         tr.appendChild(tdSpeedD);
       }
 
+      // Vitesse upload
       if (this.config.displayColumns.speed_upload) {
         const tdSpeedU = document.createElement("td");
         tdSpeedU.textContent =
@@ -160,6 +162,7 @@ Module.register("MMM-Synology-Download_Station", {
         tr.appendChild(tdSpeedU);
       }
 
+      // Taille
       if (this.config.displayColumns.size) {
         const tdSize = document.createElement("td");
         tdSize.textContent = this.formatSize(task.size);
@@ -169,21 +172,25 @@ Module.register("MMM-Synology-Download_Station", {
 
       tbody.appendChild(tr);
     });
-
     table.appendChild(tbody);
-    wrapper.appendChild(table);
 
+    wrapper.appendChild(table);
     return wrapper;
   },
 
   formatSize(bytes) {
-    if (bytes === 0) return "0 B";
+    if (!bytes) return "-";
     const sizes = ["B", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, i)).toFixed(1) + " " + sizes[i];
+    let i = 0;
+    let size = bytes;
+    while (size >= 1024 && i < sizes.length -1) {
+      size /= 1024;
+      i++;
+    }
+    return size.toFixed(1) + " " + sizes[i];
   },
 
-  formatSpeed(bytesPerSecond) {
-    return this.formatSize(bytesPerSecond) + "/s";
+  formatSpeed(bytesPerSec) {
+    return this.formatSize(bytesPerSec) + "/s";
   }
 });
