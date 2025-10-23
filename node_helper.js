@@ -22,12 +22,14 @@ module.exports = NodeHelper.create({
 
       this.session = axios.create({
         baseURL: this.baseUrl,
-        timeout: 60000, // délai 60 secondes pour tolérer latence réseau
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }) // prise en charge des certificats auto-signés
+        timeout: 60000,
+        httpsAgent: new https.Agent({ rejectUnauthorized: false })
       });
 
     } else if (notification === "GET_TASKS") {
       this.getTasks();
+    } else if (notification === "CHECK_API") {
+      this.getApiInfo();
     }
   },
 
@@ -73,7 +75,7 @@ module.exports = NodeHelper.create({
     }
 
     try {
-      const response = await this.session.get("/entry.cgi", {
+      const response = await this.session.get("/DownloadStation/task.cgi", {
         params: {
           api: "SYNO.DownloadStation.Task",
           method: "list",
@@ -82,7 +84,6 @@ module.exports = NodeHelper.create({
         }
       });
 
-      // Log complet de la réponse JSON pour debug
       console.log("Réponse API tâches (brute) :", JSON.stringify(response.data, null, 2));
 
       if (response.data && response.data.success) {
@@ -93,6 +94,30 @@ module.exports = NodeHelper.create({
     } catch (error) {
       console.error("Erreur récupération tâches :", error.message || error);
       this.sendSocketNotification("TASKS_DATA", []);
+    }
+  },
+
+  async getApiInfo() {
+    const sid = await this.login();
+    if (!sid) {
+      console.log("Impossible de récupérer le SID");
+      return;
+    }
+
+    try {
+      const response = await this.session.get("/query.cgi", {
+        params: {
+          api: "SYNO.API.Info",
+          version: "1",
+          method: "query",
+          query: "SYNO.DownloadStation.Task",
+          _sid: sid
+        }
+      });
+
+      console.log("API Info SYNO.DownloadStation.Task :", JSON.stringify(response.data, null, 2));
+    } catch (error) {
+      console.error("Erreur lors de la récupération des infos API :", error.message || error);
     }
   }
 });

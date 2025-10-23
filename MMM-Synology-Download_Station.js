@@ -9,6 +9,10 @@ Module.register("MMM-Synology-Download_Station", {
     Log.info("MMM-Synology-Download_Station démarre...");
     this.tasks = [];
     this.sendSocketNotification("CONFIG", this.config);
+
+    // Envoie la notification CHECK_API pour vérifier la présence de l'API
+    this.sendSocketNotification("CHECK_API");
+
     this.getTasks();
     this.scheduleUpdate();
   },
@@ -33,16 +37,19 @@ Module.register("MMM-Synology-Download_Station", {
       }
       this.updateDom(this.config.animationSpeed);
     }
+    // Pour afficher les logs ou autres notifications venant du node helper
+    else {
+      Log.info(`Notification reçue (${notification}):`, payload);
+    }
   },
 
   getDom() {
     const wrapper = document.createElement("div");
-    wrapper.style.whiteSpace = "pre-wrap"; // conserver les retours à la ligne
+    wrapper.style.whiteSpace = "pre-wrap";
 
     if (!this.tasks || this.tasks.length === 0) {
       wrapper.textContent = "Aucune tâche Download Station reçue.";
     } else {
-      // Affiche les données JSON brutes pour débogage
       wrapper.textContent = JSON.stringify(this.tasks, null, 2);
     }
 
