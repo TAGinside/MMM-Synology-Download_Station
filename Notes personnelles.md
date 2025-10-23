@@ -87,3 +87,5 @@ node --run install-mm
 ```
 
 impossible d'installer le Magic Mirror
+
+test
