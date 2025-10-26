@@ -12,3 +12,8 @@
   background-color: #222;
   font-weight: bold;
 }
+.no-tasks {
+  padding: 10px;
+  font-style: italic;
+  color: #aaa;
+}
