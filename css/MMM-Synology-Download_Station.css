@@ -1,14 +1,393 @@
-.synology-table {
+/* =========================================
+   MMM-Synology-Download_Station
+   Fichier CSS moderne et élégant
+   ========================================= */
+
+/* Container principal du module */
+.MMM-Synology-Download_Station {
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
   width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
   color: #fff;
+  background: rgba(20, 20, 20, 0.6);
+  border-radius: 10px;
+  padding: 15px;
+  box-sizing: border-box;
+  backdrop-filter: blur(10px);
 }
-.synology-table th, .synology-table td {
-  padding: 4px 8px;
-  border-bottom: 1px solid #555;
+
+/* En-tête du module */
+.MMM-Synology-Download_Station .module-header {
+  text-align: left;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  font-weight: 500;
+  letter-spacing: 1px;
 }
-.synology-table th {
-  background-color: #222;
-  font-weight: bold;
+
+/* Container de la table */
+.MMM-Synology-Download_Station .ds-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+}
+
+/* En-têtes de colonnes */
+.MMM-Synology-Download_Station .ds-table thead {
+  opacity: 0.7;
+}
+
+.MMM-Synology-Download_Station .ds-table th {
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 0.85em;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Lignes de tâches */
+.MMM-Synology-Download_Station .ds-table tbody tr {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  backdrop-filter: blur(5px);
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* Animation à l'affichage des lignes (différée) */
+.MMM-Synology-Download_Station .ds-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.MMM-Synology-Download_Station .ds-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+.MMM-Synology-Download_Station .ds-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+.MMM-Synology-Download_Station .ds-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+.MMM-Synology-Download_Station .ds-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover sur les lignes */
+.MMM-Synology-Download_Station .ds-table tbody tr:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.08) 100%);
+  transform: translateX(5px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Cellules */
+.MMM-Synology-Download_Station .ds-table td {
+  padding: 12px 14px;
+  font-size: 0.9em;
+  vertical-align: middle;
+}
+
+.MMM-Synology-Download_Station .ds-table td:first-child {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.MMM-Synology-Download_Station .ds-table td:last-child {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* Icônes de statut */
+.MMM-Synology-Download_Station .status-icon {
+  font-size: 1.2em;
+  margin-right: 8px;
+  display: inline-block;
+  width: 24px;
+  text-align: center;
+}
+
+/* Statut: Téléchargement en cours */
+.MMM-Synology-Download_Station .status-downloading {
+  color: #4CAF50;
+  animation: pulse-download 2s ease-in-out infinite;
+}
+
+@keyframes pulse-download {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+/* Statut: Terminé */
+.MMM-Synology-Download_Station .status-finished {
+  color: #2196F3;
+}
+
+/* Statut: En attente */
+.MMM-Synology-Download_Station .status-waiting {
+  color: #FF9800;
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Statut: En pause */
+.MMM-Synology-Download_Station .status-paused {
+  color: #9E9E9E;
+}
+
+/* Statut: Erreur */
+.MMM-Synology-Download_Station .status-error {
+  color: #F44336;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+/* Statut: Seeding */
+.MMM-Synology-Download_Station .status-seeding {
+  color: #8BC34A;
+  animation: rotate 3s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Statut: Vérification du hash */
+.MMM-Synology-Download_Station .status-checking {
+  color: #00BCD4;
+  animation: pulse-check 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-check {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Titre de la tâche */
+.MMM-Synology-Download_Station .task-title {
+  font-weight: 500;
+  color: #fff;
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Mode compact - Titre plus court */
+.MMM-Synology-Download_Station.compact .task-title {
+  max-width: 200px;
+}
+
+/* Barre de progression */
+.MMM-Synology-Download_Station .progress-container {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.MMM-Synology-Download_Station .progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+  border-radius: 10px;
+  transition: width 0.5s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animation de progression */
+.MMM-Synology-Download_Station .progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: progress-shine 2s ease-in-out infinite;
+}
+
+@keyframes progress-shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Texte du pourcentage */
+.MMM-Synology-Download_Station .progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.75em;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+/* Vitesses de téléchargement/upload */
+.MMM-Synology-Download_Station .speed-download {
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+.MMM-Synology-Download_Station .speed-upload {
+  color: #FF9800;
+  font-weight: 500;
+}
+
+/* Icônes de vitesse */
+.MMM-Synology-Download_Station .speed-icon {
+  margin-right: 5px;
+  opacity: 0.8;
+}
+
+/* Taille du fichier */
+.MMM-Synology-Download_Station .task-size {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85em;
+}
+
+/* Message liste vide */
+.MMM-Synology-Download_Station .empty-message {
+  padding: 30px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  font-size: 1.1em;
+}
+
+/* Mode compact */
+.MMM-Synology-Download_Station.compact .ds-table td {
+  padding: 8px 10px;
+  font-size: 0.8em;
+}
+
+.MMM-Synology-Download_Station.compact .status-icon {
+  font-size: 1em;
+}
+
+.MMM-Synology-Download_Station.compact .progress-container {
+  height: 16px;
+}
+
+/* Tailles de texte personnalisables */
+.MMM-Synology-Download_Station.xsmall {
+  font-size: 0.75em;
+}
+
+.MMM-Synology-Download_Station.small {
+  font-size: 0.85em;
+}
+
+.MMM-Synology-Download_Station.medium {
+  font-size: 1em;
+}
+
+.MMM-Synology-Download_Station.large {
+  font-size: 1.15em;
+}
+
+.MMM-Synology-Download_Station.xlarge {
+  font-size: 1.3em;
+}
+
+/* Tailles d'icônes personnalisables */
+.MMM-Synology-Download_Station .icon-xsmall {
+  font-size: 0.9em;
+}
+
+.MMM-Synology-Download_Station .icon-small {
+  font-size: 1.1em;
+}
+
+.MMM-Synology-Download_Station .icon-medium {
+  font-size: 1.3em;
+}
+
+.MMM-Synology-Download_Station .icon-large {
+  font-size: 1.5em;
+}
+
+.MMM-Synology-Download_Station .icon-xlarge {
+  font-size: 1.8em;
+}
+
+/* Responsive - Adaptation mobile */
+@media screen and (max-width: 768px) {
+  .MMM-Synology-Download_Station .task-title {
+    max-width: 150px;
+  }
+  
+  .MMM-Synology-Download_Station .ds-table td {
+    padding: 8px;
+    font-size: 0.8em;
+  }
+}
+
+/* Scrollbar personnalisée */
+.MMM-Synology-Download_Station::-webkit-scrollbar {
+  width: 8px;
+}
+
+.MMM-Synology-Download_Station::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.MMM-Synology-Download_Station::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.MMM-Synology-Download_Station::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
