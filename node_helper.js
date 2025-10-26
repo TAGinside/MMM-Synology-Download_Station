@@ -36,7 +36,7 @@ module.exports = NodeHelper.create({
       const params = querystring.stringify({
         api: "SYNO.API.Auth",
         method: "login",
-        version: "7",
+        version: "2",      // Corrigé à la version 2 recommandée
         account: this.config.user,
         passwd: this.config.passwd,
         session: "DownloadStation",
@@ -73,7 +73,7 @@ module.exports = NodeHelper.create({
     }
 
     try {
-      const response = await this.session.get("/entry.cgi", {
+      const response = await this.session.get("/DownloadStation/task.cgi", {  // Correction chemin API
         params: {
           api: "SYNO.DownloadStation.Task",
           method: "list",
