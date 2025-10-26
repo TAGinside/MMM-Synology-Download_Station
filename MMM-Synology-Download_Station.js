@@ -62,6 +62,10 @@ Module.register("MMM-Synology-Download_Station", {
     const table = document.createElement("table");
     table.className = "synology-table";
 
+<<<<<<< HEAD
+=======
+    // La ligne d'en-tête
+>>>>>>> parent of 412f341 (Update 0.9.0)
     const thead = document.createElement("thead");
     const trHead = document.createElement("tr");
 
@@ -99,15 +103,27 @@ Module.register("MMM-Synology-Download_Station", {
     thead.appendChild(trHead);
     table.appendChild(thead);
 
+<<<<<<< HEAD
+=======
+    // Corps du tableau
+>>>>>>> parent of 412f341 (Update 0.9.0)
     const tbody = document.createElement("tbody");
     this.tasks.forEach(task => {
       const tr = document.createElement("tr");
 
+<<<<<<< HEAD
+=======
+      // Icône statut
+>>>>>>> parent of 412f341 (Update 0.9.0)
       if (this.config.displayColumns.status_icon) {
         const tdIcon = document.createElement("td");
         tdIcon.style.textAlign = "center";
 
+<<<<<<< HEAD
         let icon = "⏳";
+=======
+        let icon = "⏳"; // default
+>>>>>>> parent of 412f341 (Update 0.9.0)
         switch (task.status) {
           case "downloading": icon = "⬇️"; break;
           case "seeding": icon = "⬆️"; break;
@@ -119,12 +135,20 @@ Module.register("MMM-Synology-Download_Station", {
         tr.appendChild(tdIcon);
       }
 
+<<<<<<< HEAD
+=======
+      // Titre
+>>>>>>> parent of 412f341 (Update 0.9.0)
       if (this.config.displayColumns.title) {
         const tdTitle = document.createElement("td");
         tdTitle.textContent = task.title || "Inconnu";
         tr.appendChild(tdTitle);
       }
 
+<<<<<<< HEAD
+=======
+      // % avancé
+>>>>>>> parent of 412f341 (Update 0.9.0)
       if (this.config.displayColumns.percent_completed) {
         const tdPercent = document.createElement("td");
         tdPercent.textContent =
@@ -135,6 +159,10 @@ Module.register("MMM-Synology-Download_Station", {
         tr.appendChild(tdPercent);
       }
 
+<<<<<<< HEAD
+=======
+      // Vitesse download
+>>>>>>> parent of 412f341 (Update 0.9.0)
       if (this.config.displayColumns.speed_download) {
         const tdSpeedD = document.createElement("td");
         tdSpeedD.textContent =
@@ -145,6 +173,10 @@ Module.register("MMM-Synology-Download_Station", {
         tr.appendChild(tdSpeedD);
       }
 
+<<<<<<< HEAD
+=======
+      // Vitesse upload
+>>>>>>> parent of 412f341 (Update 0.9.0)
       if (this.config.displayColumns.speed_upload) {
         const tdSpeedU = document.createElement("td");
         tdSpeedU.textContent =
@@ -155,6 +187,10 @@ Module.register("MMM-Synology-Download_Station", {
         tr.appendChild(tdSpeedU);
       }
 
+<<<<<<< HEAD
+=======
+      // Taille
+>>>>>>> parent of 412f341 (Update 0.9.0)
       if (this.config.displayColumns.size) {
         const tdSize = document.createElement("td");
         tdSize.textContent = this.formatSize(task.size);
@@ -165,6 +201,10 @@ Module.register("MMM-Synology-Download_Station", {
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
+<<<<<<< HEAD
+=======
+
+>>>>>>> parent of 412f341 (Update 0.9.0)
     wrapper.appendChild(table);
     return wrapper;
   },
