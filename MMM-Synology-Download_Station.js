@@ -65,9 +65,13 @@ Module.register("MMM-Synology-Download_Station", {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     // La ligne d'en-tête
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+    // En-tête
+>>>>>>> parent of 8d41722 (0.7)
 =======
     // En-tête
 >>>>>>> parent of 8d41722 (0.7)
@@ -110,9 +114,13 @@ Module.register("MMM-Synology-Download_Station", {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     // Corps du tableau
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+    // Corps
+>>>>>>> parent of 8d41722 (0.7)
 =======
     // Corps
 >>>>>>> parent of 8d41722 (0.7)
@@ -123,9 +131,12 @@ Module.register("MMM-Synology-Download_Station", {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // Icône statut
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
 =======
 >>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.status_icon) {
@@ -134,10 +145,15 @@ Module.register("MMM-Synology-Download_Station", {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         let icon = "⏳";
 =======
         let icon = "⏳"; // default
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+        // Exemple d’icône en fonction du statut
+        let icon = "⏳"; // par défaut
+>>>>>>> parent of 8d41722 (0.7)
 =======
         // Exemple d’icône en fonction du statut
         let icon = "⏳"; // par défaut
@@ -155,9 +171,12 @@ Module.register("MMM-Synology-Download_Station", {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // Titre
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
 =======
 >>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.title) {
@@ -168,9 +187,12 @@ Module.register("MMM-Synology-Download_Station", {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // % avancé
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
 =======
 >>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.percent_completed) {
@@ -185,9 +207,12 @@ Module.register("MMM-Synology-Download_Station", {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // Vitesse download
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
 =======
 >>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.speed_download) {
@@ -202,9 +227,12 @@ Module.register("MMM-Synology-Download_Station", {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // Vitesse upload
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
 =======
 >>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.speed_upload) {
@@ -219,9 +247,12 @@ Module.register("MMM-Synology-Download_Station", {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // Taille
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
 =======
 >>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.size) {
@@ -234,11 +265,16 @@ Module.register("MMM-Synology-Download_Station", {
       tbody.appendChild(tr);
     });
 <<<<<<< HEAD
+<<<<<<< HEAD
     table.appendChild(tbody);
 <<<<<<< HEAD
 =======
 
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+
+    table.appendChild(tbody);
+>>>>>>> parent of 8d41722 (0.7)
 =======
 
     table.appendChild(tbody);
