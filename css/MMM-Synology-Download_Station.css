@@ -3,6 +3,7 @@
   border-collapse: collapse;
   font-size: 14px;
 <<<<<<< HEAD
+<<<<<<< HEAD
   color: white;
 }
 
@@ -26,13 +27,28 @@
   color: #aaa;
 =======
   color: #fff;
+=======
+  color: white;
+>>>>>>> parent of 8d41722 (0.7)
 }
-.synology-table th, .synology-table td {
+
+.synology-table th, 
+.synology-table td {
   padding: 4px 8px;
-  border-bottom: 1px solid #555;
+  border-bottom: 1px solid #444;
 }
+
 .synology-table th {
+<<<<<<< HEAD
   background-color: #222;
   font-weight: bold;
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+  border-bottom: 2px solid #888;
+  text-align: left;
+}
+
+.status-icon {
+  width: 25px;
+>>>>>>> parent of 8d41722 (0.7)
 }

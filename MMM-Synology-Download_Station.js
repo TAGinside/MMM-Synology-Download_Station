@@ -4,19 +4,21 @@ Module.register("MMM-Synology-Download_Station", {
     maxItems: 10,
     compactMode: false,
     displayColumns: {
-      status_icon: true,
       title: true,
+      status_icon: true,
       percent_completed: true,
-      size: true,
       speed_download: true,
-      speed_upload: true
+      speed_upload: true,
+      size: true
     },
     displayTasks: {
-      seeding: true,
-      downloading: true,
       finished: true,
-      error: true,
-      paused: true
+      downloading: true,
+      waiting: true,
+      hash_checking: true,
+      paused: true,
+      seeding: true,
+      error: true
     }
   },
 
@@ -40,6 +42,7 @@ Module.register("MMM-Synology-Download_Station", {
   socketNotificationReceived(notification, payload) {
     if (notification === "TASKS_DATA") {
       if (payload && Array.isArray(payload)) {
+        // Filtrer les tâches selon le statut et la config
         this.tasks = payload.filter(task =>
           this.config.displayTasks[task.status] !== false
         ).slice(0, this.config.maxItems);
@@ -52,10 +55,8 @@ Module.register("MMM-Synology-Download_Station", {
 
   getDom() {
     const wrapper = document.createElement("div");
-    wrapper.className = "synology-wrapper";
-
     if (!this.tasks.length) {
-      wrapper.innerHTML = "<div class='no-tasks'>Aucune tâche en cours</div>";
+      wrapper.innerHTML = "<em>Aucune tâche Download Station</em>";
       return wrapper;
     }
 
@@ -63,15 +64,19 @@ Module.register("MMM-Synology-Download_Station", {
     table.className = "synology-table";
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     // La ligne d'en-tête
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+    // En-tête
+>>>>>>> parent of 8d41722 (0.7)
     const thead = document.createElement("thead");
     const trHead = document.createElement("tr");
 
     if (this.config.displayColumns.status_icon) {
       const thIcon = document.createElement("th");
-      thIcon.style.width = "30px";
+      thIcon.textContent = "";
       trHead.appendChild(thIcon);
     }
     if (this.config.displayColumns.title) {
@@ -104,26 +109,39 @@ Module.register("MMM-Synology-Download_Station", {
     table.appendChild(thead);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     // Corps du tableau
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+    // Corps
+>>>>>>> parent of 8d41722 (0.7)
     const tbody = document.createElement("tbody");
+
     this.tasks.forEach(task => {
       const tr = document.createElement("tr");
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // Icône statut
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.status_icon) {
         const tdIcon = document.createElement("td");
-        tdIcon.style.textAlign = "center";
+        tdIcon.className = "status-icon";
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         let icon = "⏳";
 =======
         let icon = "⏳"; // default
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+        // Exemple d’icône en fonction du statut
+        let icon = "⏳"; // par défaut
+>>>>>>> parent of 8d41722 (0.7)
         switch (task.status) {
           case "downloading": icon = "⬇️"; break;
           case "seeding": icon = "⬆️"; break;
@@ -136,19 +154,25 @@ Module.register("MMM-Synology-Download_Station", {
       }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // Titre
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.title) {
         const tdTitle = document.createElement("td");
-        tdTitle.textContent = task.title || "Inconnu";
+        tdTitle.textContent = task.title;
         tr.appendChild(tdTitle);
       }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // % avancé
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.percent_completed) {
         const tdPercent = document.createElement("td");
         tdPercent.textContent =
@@ -160,9 +184,12 @@ Module.register("MMM-Synology-Download_Station", {
       }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // Vitesse download
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.speed_download) {
         const tdSpeedD = document.createElement("td");
         tdSpeedD.textContent =
@@ -174,9 +201,12 @@ Module.register("MMM-Synology-Download_Station", {
       }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // Vitesse upload
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.speed_upload) {
         const tdSpeedU = document.createElement("td");
         tdSpeedU.textContent =
@@ -188,9 +218,12 @@ Module.register("MMM-Synology-Download_Station", {
       }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
       // Taille
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+>>>>>>> parent of 8d41722 (0.7)
       if (this.config.displayColumns.size) {
         const tdSize = document.createElement("td");
         tdSize.textContent = this.formatSize(task.size);
@@ -200,28 +233,29 @@ Module.register("MMM-Synology-Download_Station", {
 
       tbody.appendChild(tr);
     });
+<<<<<<< HEAD
     table.appendChild(tbody);
 <<<<<<< HEAD
 =======
 
 >>>>>>> parent of 412f341 (Update 0.9.0)
+=======
+
+    table.appendChild(tbody);
+>>>>>>> parent of 8d41722 (0.7)
     wrapper.appendChild(table);
+
     return wrapper;
   },
 
   formatSize(bytes) {
-    if (!bytes) return "-";
+    if (bytes === 0) return "0 B";
     const sizes = ["B", "KB", "MB", "GB", "TB"];
-    let i = 0;
-    let size = bytes;
-    while (size >= 1024 && i < sizes.length -1) {
-      size /= 1024;
-      i++;
-    }
-    return size.toFixed(1) + " " + sizes[i];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes / Math.pow(1024, i)).toFixed(1) + " " + sizes[i];
   },
 
-  formatSpeed(bytesPerSec) {
-    return this.formatSize(bytesPerSec) + "/s";
+  formatSpeed(bytesPerSecond) {
+    return this.formatSize(bytesPerSecond) + "/s";
   }
 });
