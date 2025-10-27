@@ -3,7 +3,7 @@ Module: MMM-Synology-Download_Station
 
 This [MagicMirror](https://github.com/MichMich/MagicMirror) module, display Synology Download Station tasks.
 
-compacted mode : <code>bottom_center</code>
+compacted mode : <code>top_center</code>
 
 ![Synology DS visualisation 1](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/master/Screenshot/Screenshot_01.png?raw=true)
 
