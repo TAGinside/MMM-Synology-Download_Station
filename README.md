@@ -5,7 +5,7 @@ This [MagicMirror](https://github.com/MichMich/MagicMirror) module, display Syno
 
 compacted mode : <code>bottom_center</code>
 
-![Synology DS visualisation 1](https://github.com/TAGinside/MMM-Synology-Download_Station/Screenshot/Screenshot_01.png?raw=true)
+![Synology DS visualisation 1](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/master/Screenshot/Screenshot_01.png?raw=true)
 
 ## Dependencies 
 - An installation of [MagicMirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
