@@ -3,12 +3,12 @@ const axios = require("axios");
 
 module.exports = NodeHelper.create({
   start: function() {
-    console.log("[MMM-SynologyDownload_Station] node_helper démarré.");
+    console.log("[MMM-Synology-Download_Station] node_helper démarré.");
   },
 
   socketNotificationReceived: async function(notification, payload) {
     if (notification === "DS_INIT") {
-      console.log("[MMM-SynologyDownload_Station] Configuration reçue:", payload);
+      console.log("[MMM-Synology-Download_Station] Configuration reçue:", payload);
     }
     if (notification === "DS_GET") {
       try {
@@ -18,7 +18,7 @@ module.exports = NodeHelper.create({
         await this._logout(sessionId, payload);
       } catch (err) {
         this.sendSocketNotification("DS_ERROR", err.message || err);
-        console.log("[MMM-SynologyDownload_Station] Erreur back:", err.message || err);
+        console.log("[MMM-Synology-Download_Station] Erreur back:", err.message || err);
       }
     }
   },
@@ -28,7 +28,7 @@ module.exports = NodeHelper.create({
     const url = `${protocol}://${config.host}:${config.port}/webapi/auth.cgi?api=SYNO.API.Auth&method=login&version=6&account=${config.user}&passwd=${config.passwd}&session=DownloadStation&format=sid`;
     const response = await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
     if (!response.data.success) throw new Error("Connexion Synology échouée");
-    console.log("[MMM-SynologyDownload_Station] Connexion Synology réussie.");
+    console.log("[MMM-Synology-Download_Station] Connexion Synology réussie.");
     return response.data.data.sid;
   },
 
@@ -40,7 +40,7 @@ module.exports = NodeHelper.create({
     const taskList = response.data.data.tasks.filter(task =>
       config.displayTasks[task.status]
     );
-    console.log(`[MMM-SynologyDownload_Station] Tâches récupérées: ${taskList.length}`);
+    console.log(`[MMM-Synology-Download_Station] Tâches récupérées: ${taskList.length}`);
     return taskList.slice(0, config.maxItems).map(task => ({
       id: task.id,
       title: task.title,
@@ -56,6 +56,6 @@ module.exports = NodeHelper.create({
     const protocol = config.useHttps ? "https" : "http";
     const url = `${protocol}://${config.host}:${config.port}/webapi/auth.cgi?api=SYNO.API.Auth&method=logout&version=6&session=DownloadStation&_sid=${sessionId}`;
     await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
-    console.log("[MMM-SynologyDownload_Station] Déconnexion Synology.");
+    console.log("[MMM-Synology-Download_Station] Déconnexion Synology.");
   }
 });

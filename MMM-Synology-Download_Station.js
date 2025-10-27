@@ -32,7 +32,7 @@ Module.register("MMM-Synology-Download_Station", {
   },
 
   start: function() {
-    console.log("[MMM-SynologyDownload_Station] Module lancé…");
+    console.log("[MMM-Synology-Download_Station] Module lancé !");
     this.taskList = [];
     this.sendSocketNotification("DS_INIT", this.config);
     this.loaded = false;
@@ -47,6 +47,7 @@ Module.register("MMM-Synology-Download_Station", {
 
   getDom: function() {
     var wrapper = document.createElement("div");
+    wrapper.className = "MMM-Synology-Download_Station";
 
     if (!this.loaded) {
       wrapper.innerHTML = "Chargement des tâches…";
@@ -92,7 +93,7 @@ Module.register("MMM-Synology-Download_Station", {
   _iconCell: function(task) {
     var cell = document.createElement("td");
     var icon = document.createElement("i");
-    icon.className = "fa fa-arrow-down"; // Customiser selon le status
+    icon.className = "fa fa-arrow-down"; // Customise selon status si besoin
     cell.appendChild(icon);
     return cell;
   },
@@ -112,18 +113,18 @@ Module.register("MMM-Synology-Download_Station", {
 
   socketNotificationReceived: function(notification, payload) {
     if (notification === "DS_RESULT") {
-      console.log("[MMM-SynologyDownload_Station] Tâches Synology reçues :", payload.length);
+      console.log("[MMM-Synology-Download_Station] Tâches Synology reçues :", payload.length);
       this.taskList = payload;
       this.loaded = true;
       this.updateDom();
       payload.forEach(task => {
         if (task.status === "downloading") {
-          console.log(`[MMM-SynologyDownload_Station] Téléchargement actif: ${task.title} (${task.percent_completed}%)`);
+          console.log(`[MMM-Synology-Download_Station] Téléchargement actif : ${task.title} (${task.percent_completed}%)`);
         }
       });
     }
     if (notification === "DS_ERROR") {
-      console.log("[MMM-SynologyDownload_Station] Erreur Synology:", payload);
+      console.log("[MMM-Synology-Download_Station] Erreur Synology:", payload);
       this.loaded = false;
       this.taskList = [];
       this.updateDom();

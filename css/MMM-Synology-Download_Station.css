@@ -1,24 +1,24 @@
-.MMM-SynologyDownload_Station table {
+.MMM-Synology-Download_Station table {
   width: 100%;
   font-size: 0.85em;
   border-collapse: collapse;
 }
 
-.MMM-SynologyDownload_Station td {
+.MMM-Synology-Download_Station td {
   padding: 3px 8px;
   border-bottom: 1px solid #444;
 }
 
-.MMM-SynologyDownload_Station .fa {
+.MMM-Synology-Download_Station .fa {
   margin-right: 6px;
   font-size: 1.2em;
   color: #55d;
 }
 
-.MMM-SynologyDownload_Station .xsmall {
+.MMM-Synology-Download_Station .xsmall {
   font-size: 0.83em;
 }
 
-.MMM-SynologyDownload_Station .small {
+.MMM-Synology-Download_Station .small {
   font-size: 0.96em;
 }
