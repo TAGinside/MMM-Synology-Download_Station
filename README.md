@@ -40,6 +40,7 @@ cd ~/MagicMirror/modules/MMM-Synology-Download_Station
 git pull
 npm ci
 ```
+Restart now MagicMirror !
 
 
 ## Using the module
