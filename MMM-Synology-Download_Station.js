@@ -1,15 +1,26 @@
-Module.register("MMM-Synology-Download_Station", {
+Module.register("MMM-SynologyDownloadStation", {
   defaults: {
-    updateInterval: 10 * 1000,
-    maxItems: 10,
-    compactMode: false,
+    host: null,
+    port: "5000",
+    user: null,
+    passwd: null,
+    refreshInterval: 10,
+    maxItems: 5,
+    compactMode: true,
+    compactMaxLen: 30,
+    textSize: "xsmall",
+    iconSize: "small",
     displayColumns: {
-      title: true,
+      id: false,
       status_icon: true,
+      status: false,
+      title: true,
+      size: true,
       percent_completed: true,
+      download_icon: true,
       speed_download: true,
-      speed_upload: true,
-      size: true
+      upload_icon: true,
+      speed_upload: true
     },
     displayTasks: {
       finished: true,
@@ -19,279 +30,104 @@ Module.register("MMM-Synology-Download_Station", {
       paused: true,
       seeding: true,
       error: true
-    }
+    },
+    msgEmptyList: "Aucun téléchargement",
   },
 
-  start() {
-    this.tasks = [];
-    this.sendSocketNotification("CONFIG", this.config);
-    this.updateTasks();
+  start: function() {
+    console.log("[MMM-SynologyDownloadStation] Démarrage du module...");
+    this.taskList = [];
+    this.sendSocketNotification("DS_INIT", this.config);
+    this.loaded = false;
     this.scheduleUpdate();
   },
 
-  scheduleUpdate() {
+  scheduleUpdate: function() {
     setInterval(() => {
-      this.updateTasks();
-    }, this.config.updateInterval);
+      this.sendSocketNotification("DS_GET", this.config);
+    }, this.config.refreshInterval * 1000);
   },
 
-  updateTasks() {
-    this.sendSocketNotification("GET_TASKS");
-  },
+  getDom: function() {
+    var wrapper = document.createElement("div");
 
-  socketNotificationReceived(notification, payload) {
-    if (notification === "TASKS_DATA") {
-      if (payload && Array.isArray(payload)) {
-        // Filtrer les tâches selon le statut et la config
-        this.tasks = payload.filter(task =>
-          this.config.displayTasks[task.status] !== false
-        ).slice(0, this.config.maxItems);
-      } else {
-        this.tasks = [];
-      }
-      this.updateDom(1000);
-    }
-  },
-
-  getDom() {
-    const wrapper = document.createElement("div");
-    if (!this.tasks.length) {
-      wrapper.innerHTML = "<em>Aucune tâche Download Station</em>";
+    if (!this.loaded) {
+      wrapper.innerHTML = "Chargement des tâches…";
       return wrapper;
     }
 
-    const table = document.createElement("table");
-    table.className = "synology-table";
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    // La ligne d'en-tête
->>>>>>> parent of 412f341 (Update 0.9.0)
-=======
-    // En-tête
->>>>>>> parent of 8d41722 (0.7)
-=======
-    // En-tête
->>>>>>> parent of 8d41722 (0.7)
-    const thead = document.createElement("thead");
-    const trHead = document.createElement("tr");
-
-    if (this.config.displayColumns.status_icon) {
-      const thIcon = document.createElement("th");
-      thIcon.textContent = "";
-      trHead.appendChild(thIcon);
-    }
-    if (this.config.displayColumns.title) {
-      const thTitle = document.createElement("th");
-      thTitle.textContent = "Titre";
-      trHead.appendChild(thTitle);
-    }
-    if (this.config.displayColumns.percent_completed) {
-      const thPercent = document.createElement("th");
-      thPercent.textContent = "%";
-      trHead.appendChild(thPercent);
-    }
-    if (this.config.displayColumns.speed_download) {
-      const thSpeedD = document.createElement("th");
-      thSpeedD.textContent = "↓ Débit";
-      trHead.appendChild(thSpeedD);
-    }
-    if (this.config.displayColumns.speed_upload) {
-      const thSpeedU = document.createElement("th");
-      thSpeedU.textContent = "↑ Débit";
-      trHead.appendChild(thSpeedU);
-    }
-    if (this.config.displayColumns.size) {
-      const thSize = document.createElement("th");
-      thSize.textContent = "Taille";
-      trHead.appendChild(thSize);
+    if (this.taskList.length === 0) {
+      wrapper.innerHTML = this.config.msgEmptyList;
+      return wrapper;
     }
 
-    thead.appendChild(trHead);
-    table.appendChild(thead);
+    // Construire le tableau
+    var table = document.createElement("table");
+    table.className = `${this.config.textSize}`;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    // Corps du tableau
->>>>>>> parent of 412f341 (Update 0.9.0)
-=======
-    // Corps
->>>>>>> parent of 8d41722 (0.7)
-=======
-    // Corps
->>>>>>> parent of 8d41722 (0.7)
-    const tbody = document.createElement("tbody");
+    this.taskList.forEach((task) => {
+      var row = document.createElement("tr");
 
-    this.tasks.forEach(task => {
-      const tr = document.createElement("tr");
+      if (this.config.displayColumns.status_icon)
+        row.appendChild(this._iconCell(task));
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-      // Icône statut
->>>>>>> parent of 412f341 (Update 0.9.0)
-=======
->>>>>>> parent of 8d41722 (0.7)
-=======
->>>>>>> parent of 8d41722 (0.7)
-      if (this.config.displayColumns.status_icon) {
-        const tdIcon = document.createElement("td");
-        tdIcon.className = "status-icon";
+      if (this.config.displayColumns.title)
+        row.appendChild(this._textCell(task.title, this.config.compactMaxLen));
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        let icon = "⏳";
-=======
-        let icon = "⏳"; // default
->>>>>>> parent of 412f341 (Update 0.9.0)
-=======
-        // Exemple d’icône en fonction du statut
-        let icon = "⏳"; // par défaut
->>>>>>> parent of 8d41722 (0.7)
-=======
-        // Exemple d’icône en fonction du statut
-        let icon = "⏳"; // par défaut
->>>>>>> parent of 8d41722 (0.7)
-        switch (task.status) {
-          case "downloading": icon = "⬇️"; break;
-          case "seeding": icon = "⬆️"; break;
-          case "finished": icon = "✔️"; break;
-          case "error": icon = "❌"; break;
-          case "paused": icon = "⏸️"; break;
-        }
-        tdIcon.textContent = icon;
-        tr.appendChild(tdIcon);
-      }
+      if (this.config.displayColumns.size)
+        row.appendChild(this._textCell(this._formatBytes(task.size), 15));
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-      // Titre
->>>>>>> parent of 412f341 (Update 0.9.0)
-=======
->>>>>>> parent of 8d41722 (0.7)
-=======
->>>>>>> parent of 8d41722 (0.7)
-      if (this.config.displayColumns.title) {
-        const tdTitle = document.createElement("td");
-        tdTitle.textContent = task.title;
-        tr.appendChild(tdTitle);
-      }
+      if (this.config.displayColumns.percent_completed)
+        row.appendChild(this._textCell(task.percent_completed + "%", 6));
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-      // % avancé
->>>>>>> parent of 412f341 (Update 0.9.0)
-=======
->>>>>>> parent of 8d41722 (0.7)
-=======
->>>>>>> parent of 8d41722 (0.7)
-      if (this.config.displayColumns.percent_completed) {
-        const tdPercent = document.createElement("td");
-        tdPercent.textContent =
-          task.additional && task.additional.percent
-            ? `${task.additional.percent}%`
-            : "N/A";
-        tdPercent.style.textAlign = "center";
-        tr.appendChild(tdPercent);
-      }
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-      // Vitesse download
->>>>>>> parent of 412f341 (Update 0.9.0)
-=======
->>>>>>> parent of 8d41722 (0.7)
-=======
->>>>>>> parent of 8d41722 (0.7)
-      if (this.config.displayColumns.speed_download) {
-        const tdSpeedD = document.createElement("td");
-        tdSpeedD.textContent =
-          task.additional && task.additional.speed_download
-            ? this.formatSpeed(task.additional.speed_download)
-            : "-";
-        tdSpeedD.style.textAlign = "right";
-        tr.appendChild(tdSpeedD);
-      }
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-      // Vitesse upload
->>>>>>> parent of 412f341 (Update 0.9.0)
-=======
->>>>>>> parent of 8d41722 (0.7)
-=======
->>>>>>> parent of 8d41722 (0.7)
-      if (this.config.displayColumns.speed_upload) {
-        const tdSpeedU = document.createElement("td");
-        tdSpeedU.textContent =
-          task.additional && task.additional.speed_upload
-            ? this.formatSpeed(task.additional.speed_upload)
-            : "-";
-        tdSpeedU.style.textAlign = "right";
-        tr.appendChild(tdSpeedU);
-      }
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-      // Taille
->>>>>>> parent of 412f341 (Update 0.9.0)
-=======
->>>>>>> parent of 8d41722 (0.7)
-=======
->>>>>>> parent of 8d41722 (0.7)
-      if (this.config.displayColumns.size) {
-        const tdSize = document.createElement("td");
-        tdSize.textContent = this.formatSize(task.size);
-        tdSize.style.textAlign = "right";
-        tr.appendChild(tdSize);
-      }
-
-      tbody.appendChild(tr);
+      if (this.config.displayColumns.speed_download)
+        row.appendChild(this._textCell(this._formatBytes(task.speed_download) + "/s", 10));
+      
+      table.appendChild(row);
     });
-<<<<<<< HEAD
-<<<<<<< HEAD
-    table.appendChild(tbody);
-<<<<<<< HEAD
-=======
 
->>>>>>> parent of 412f341 (Update 0.9.0)
-=======
-
-    table.appendChild(tbody);
->>>>>>> parent of 8d41722 (0.7)
-=======
-
-    table.appendChild(tbody);
->>>>>>> parent of 8d41722 (0.7)
     wrapper.appendChild(table);
-
     return wrapper;
   },
 
-  formatSize(bytes) {
-    if (bytes === 0) return "0 B";
-    const sizes = ["B", "KB", "MB", "GB", "TB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return (bytes / Math.pow(1024, i)).toFixed(1) + " " + sizes[i];
+  _iconCell: function(task) {
+    var cell = document.createElement("td");
+    var icon = document.createElement("i");
+    icon.className = "fa fa-arrow-down"; // Selon le status ajouter des icones différenciées
+    cell.appendChild(icon);
+    return cell;
   },
 
-  formatSpeed(bytesPerSecond) {
-    return this.formatSize(bytesPerSecond) + "/s";
+  _textCell: function(text, maxLen) {
+    var cell = document.createElement("td");
+    cell.innerHTML = text.length > maxLen ? text.substring(0, maxLen) + "..." : text;
+    return cell;
+  },
+
+  _formatBytes: function(bytes) {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(1) + " MB";
+    return (bytes / 1024 / 1024 / 1024).toFixed(1) + " GB";
+  },
+
+  socketNotificationReceived: function(notification, payload) {
+    if (notification === "DS_RESULT") {
+      console.log("[MMM-SynologyDownloadStation] Tâches actives reçues :", payload.length);
+      this.taskList = payload;
+      this.loaded = true;
+      this.updateDom();
+      payload.forEach(task => {
+        if (task.status === "downloading") {
+          console.log(`[MMM-SynologyDownloadStation] Active: ${task.title} (${task.percent_completed}%)`);
+        }
+      });
+    }
+    if (notification === "DS_ERROR") {
+      console.log("[MMM-SynologyDownloadStation] Erreur Synology:", payload);
+      this.loaded = false;
+      this.taskList = [];
+      this.updateDom();
+    }
   }
 });
