@@ -2,6 +2,7 @@ Module.register("MMM-SynologyDownload_Station", {
   defaults: {
     host: null,
     port: "5000",
+    useHttps: false,
     user: null,
     passwd: null,
     refreshInterval: 10,
@@ -11,15 +12,11 @@ Module.register("MMM-SynologyDownload_Station", {
     textSize: "xsmall",
     iconSize: "small",
     displayColumns: {
-      id: false,
       status_icon: true,
-      status: false,
       title: true,
       size: true,
       percent_completed: true,
-      download_icon: true,
       speed_download: true,
-      upload_icon: true,
       speed_upload: true
     },
     displayTasks: {
@@ -35,7 +32,7 @@ Module.register("MMM-SynologyDownload_Station", {
   },
 
   start: function() {
-    console.log("[MMM-SynologyDownload_Station] Démarrage du module...");
+    console.log("[MMM-SynologyDownload_Station] Module lancé…");
     this.taskList = [];
     this.sendSocketNotification("DS_INIT", this.config);
     this.loaded = false;
@@ -61,9 +58,8 @@ Module.register("MMM-SynologyDownload_Station", {
       return wrapper;
     }
 
-    // Construire le tableau
     var table = document.createElement("table");
-    table.className = `${this.config.textSize}`;
+    table.className = this.config.textSize;
 
     this.taskList.forEach((task) => {
       var row = document.createElement("tr");
@@ -78,11 +74,14 @@ Module.register("MMM-SynologyDownload_Station", {
         row.appendChild(this._textCell(this._formatBytes(task.size), 15));
 
       if (this.config.displayColumns.percent_completed)
-        row.appendChild(this._textCell(task.percent_completed + "%", 6));
+        row.appendChild(this._textCell(task.percent_completed + " %", 6));
 
       if (this.config.displayColumns.speed_download)
         row.appendChild(this._textCell(this._formatBytes(task.speed_download) + "/s", 10));
-      
+
+      if (this.config.displayColumns.speed_upload)
+        row.appendChild(this._textCell(this._formatBytes(task.speed_upload) + "/s", 10));
+
       table.appendChild(row);
     });
 
@@ -93,14 +92,14 @@ Module.register("MMM-SynologyDownload_Station", {
   _iconCell: function(task) {
     var cell = document.createElement("td");
     var icon = document.createElement("i");
-    icon.className = "fa fa-arrow-down"; // Selon le status ajouter des icones différenciées
+    icon.className = "fa fa-arrow-down"; // Customiser selon le status
     cell.appendChild(icon);
     return cell;
   },
 
   _textCell: function(text, maxLen) {
     var cell = document.createElement("td");
-    cell.innerHTML = text.length > maxLen ? text.substring(0, maxLen) + "..." : text;
+    cell.innerHTML = typeof text === "string" && text.length > maxLen ? text.substring(0, maxLen) + "..." : text;
     return cell;
   },
 
@@ -113,13 +112,13 @@ Module.register("MMM-SynologyDownload_Station", {
 
   socketNotificationReceived: function(notification, payload) {
     if (notification === "DS_RESULT") {
-      console.log("[MMM-SynologyDownload_Station] Tâches actives reçues :", payload.length);
+      console.log("[MMM-SynologyDownload_Station] Tâches Synology reçues :", payload.length);
       this.taskList = payload;
       this.loaded = true;
       this.updateDom();
       payload.forEach(task => {
         if (task.status === "downloading") {
-          console.log(`[MMM-SynologyDownload_Station] Active: ${task.title} (${task.percent_completed}%)`);
+          console.log(`[MMM-SynologyDownload_Station] Téléchargement actif: ${task.title} (${task.percent_completed}%)`);
         }
       });
     }

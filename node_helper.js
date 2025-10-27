@@ -8,7 +8,7 @@ module.exports = NodeHelper.create({
 
   socketNotificationReceived: async function(notification, payload) {
     if (notification === "DS_INIT") {
-      console.log(`[MMM-SynologyDownload_Station] Configuration reçue:`, payload);
+      console.log("[MMM-SynologyDownload_Station] Configuration reçue:", payload);
     }
     if (notification === "DS_GET") {
       try {
@@ -41,7 +41,7 @@ module.exports = NodeHelper.create({
       config.displayTasks[task.status]
     );
     console.log(`[MMM-SynologyDownload_Station] Tâches récupérées: ${taskList.length}`);
-    return taskList.map(task => ({
+    return taskList.slice(0, config.maxItems).map(task => ({
       id: task.id,
       title: task.title,
       size: task.size,
