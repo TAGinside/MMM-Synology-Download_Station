@@ -35,7 +35,7 @@ Module.register("MMM-SynologyDownload_Station", {
   },
 
   start: function() {
-    console.log("[MMM-SynologyDownloadStation] Démarrage du module...");
+    console.log("[MMM-SynologyDownload_Station] Démarrage du module...");
     this.taskList = [];
     this.sendSocketNotification("DS_INIT", this.config);
     this.loaded = false;
@@ -113,18 +113,18 @@ Module.register("MMM-SynologyDownload_Station", {
 
   socketNotificationReceived: function(notification, payload) {
     if (notification === "DS_RESULT") {
-      console.log("[MMM-SynologyDownloadStation] Tâches actives reçues :", payload.length);
+      console.log("[MMM-SynologyDownload_Station] Tâches actives reçues :", payload.length);
       this.taskList = payload;
       this.loaded = true;
       this.updateDom();
       payload.forEach(task => {
         if (task.status === "downloading") {
-          console.log(`[MMM-SynologyDownloadStation] Active: ${task.title} (${task.percent_completed}%)`);
+          console.log(`[MMM-SynologyDownload_Station] Active: ${task.title} (${task.percent_completed}%)`);
         }
       });
     }
     if (notification === "DS_ERROR") {
-      console.log("[MMM-SynologyDownloadStation] Erreur Synology:", payload);
+      console.log("[MMM-SynologyDownload_Station] Erreur Synology:", payload);
       this.loaded = false;
       this.taskList = [];
       this.updateDom();
