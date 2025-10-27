@@ -1,123 +1,61 @@
 const NodeHelper = require("node_helper");
 const axios = require("axios");
-const https = require("https");
-const querystring = require("querystring");
 
 module.exports = NodeHelper.create({
-  start() {
-    console.log("MMM-Synology-Download_Station helper lancé");
+  start: function() {
+    console.log("[MMM-SynologyDownload_Station] node_helper démarré.");
   },
 
-  socketNotificationReceived(notification, payload) {
-    if (notification === "CONFIG") {
-      this.config = payload;
-      console.log("Configuration reçue :", this.config);
-
-      this.config.useHttps = this.config.useHttps || false;
-      if (!this.config.port) {
-        this.config.port = this.config.useHttps ? 5001 : 5000;
+  socketNotificationReceived: async function(notification, payload) {
+    if (notification === "DS_INIT") {
+      console.log(`[MMM-SynologyDownload_Station] Configuration reçue:`, payload);
+    }
+    if (notification === "DS_GET") {
+      try {
+        const sessionId = await this._login(payload);
+        const tasks = await this._getTasks(sessionId, payload);
+        this.sendSocketNotification("DS_RESULT", tasks);
+        await this._logout(sessionId, payload);
+      } catch (err) {
+        this.sendSocketNotification("DS_ERROR", err.message || err);
+        console.log("[MMM-SynologyDownload_Station] Erreur back:", err.message || err);
       }
-      this.protocol = this.config.useHttps ? "https" : "http";
-      this.baseUrl = `${this.protocol}://${this.config.host}:${this.config.port}/webapi`;
-
-      this.session = axios.create({
-        baseURL: this.baseUrl,
-        timeout: 60000, // 60 secondes timeout
-        httpsAgent: new https.Agent({ rejectUnauthorized: false }) // support cert auto-signé
-      });
-
-    } else if (notification === "GET_TASKS") {
-      this.getTasks();
-    } else if (notification === "CHECK_API") {
-      this.getApiInfo();
     }
   },
 
-  async login() {
-    try {
-      const params = querystring.stringify({
-        api: "SYNO.API.Auth",
-        method: "login",
-        version: "2",      // Corrigé à la version 2 recommandée
-        account: this.config.user,
-        passwd: this.config.passwd,
-        session: "DownloadStation",
-        format: "sid"
-      });
-
-      const response = await this.session.get(`/auth.cgi?${params}`);
-
-      if (response.data && response.data.success) {
-        console.log("Connexion OK, SID récupéré");
-        return response.data.data.sid;
-      } else {
-        console.error("Connexion échouée :", response.data);
-        return null;
-      }
-    } catch (error) {
-      console.error("Erreur login API Synology :", error.message || error);
-      return null;
-    }
+  _login: async function(config) {
+    const protocol = config.useHttps ? "https" : "http";
+    const url = `${protocol}://${config.host}:${config.port}/webapi/auth.cgi?api=SYNO.API.Auth&method=login&version=6&account=${config.user}&passwd=${config.passwd}&session=DownloadStation&format=sid`;
+    const response = await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
+    if (!response.data.success) throw new Error("Connexion Synology échouée");
+    console.log("[MMM-SynologyDownload_Station] Connexion Synology réussie.");
+    return response.data.data.sid;
   },
 
-  async getTasks() {
-    if (!this.config) {
-      console.error("Pas de configuration");
-      return;
-    }
-
-    const sid = await this.login();
-    console.log("SID récupéré et utilisé :", sid);
-
-    if (!sid) {
-      this.sendSocketNotification("TASKS_DATA", []);
-      return;
-    }
-
-    try {
-      const response = await this.session.get("/DownloadStation/task.cgi", {  // Correction chemin API
-        params: {
-          api: "SYNO.DownloadStation.Task",
-          method: "list",
-          version: "1",
-          _sid: sid
-        }
-      });
-
-      console.log("Réponse API tâches (brute) :", JSON.stringify(response.data, null, 2));
-
-      if (response.data && response.data.success) {
-        this.sendSocketNotification("TASKS_DATA", response.data.data.tasks);
-      } else {
-        this.sendSocketNotification("TASKS_DATA", []);
-      }
-    } catch (error) {
-      console.error("Erreur récupération tâches :", error.message || error);
-      this.sendSocketNotification("TASKS_DATA", []);
-    }
+  _getTasks: async function(sessionId, config) {
+    const protocol = config.useHttps ? "https" : "http";
+    const url = `${protocol}://${config.host}:${config.port}/webapi/DownloadStation/task.cgi?api=SYNO.DownloadStation.Task&version=1&method=list&_sid=${sessionId}`;
+    const response = await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
+    if (!response.data.success) throw new Error("Récupération des tâches Synology échouée");
+    const taskList = response.data.data.tasks.filter(task =>
+      config.displayTasks[task.status]
+    );
+    console.log(`[MMM-SynologyDownload_Station] Tâches récupérées: ${taskList.length}`);
+    return taskList.map(task => ({
+      id: task.id,
+      title: task.title,
+      size: task.size,
+      percent_completed: task.additional?.transfer?.percent_completed || 0,
+      status: task.status,
+      speed_download: task.additional?.transfer?.speed_download || 0,
+      speed_upload: task.additional?.transfer?.speed_upload || 0
+    }));
   },
 
-  async getApiInfo() {
-    const sid = await this.login();
-    if (!sid) {
-      console.log("Impossible de récupérer le SID");
-      return;
-    }
-
-    try {
-      const response = await this.session.get("/query.cgi", {
-        params: {
-          api: "SYNO.API.Info",
-          version: "1",
-          method: "query",
-          query: "SYNO.DownloadStation.Task",
-          _sid: sid
-        }
-      });
-
-      console.log("API Info SYNO.DownloadStation.Task :", JSON.stringify(response.data, null, 2));
-    } catch (error) {
-      console.error("Erreur lors de la récupération des infos API :", error.message || error);
-    }
+  _logout: async function(sessionId, config) {
+    const protocol = config.useHttps ? "https" : "http";
+    const url = `${protocol}://${config.host}:${config.port}/webapi/auth.cgi?api=SYNO.API.Auth&method=logout&version=6&session=DownloadStation&_sid=${sessionId}`;
+    await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
+    console.log("[MMM-SynologyDownload_Station] Déconnexion Synology.");
   }
 });
