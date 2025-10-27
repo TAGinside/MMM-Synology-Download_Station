@@ -13,7 +13,6 @@ Compacted mode : <code>bottom_left</code>
 
 ## Dependencies 
 - An installation of [MagicMirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
-- [synology-api](https://www.npmjs.com/package/synology-api)
 
 ## Installation
 
@@ -27,7 +26,7 @@ Clone this repository:
 git clone https://github.com/TAGinside/MMM-Synology-Download_Station
 ```
 
-Navigate to the new `MMM-Synology-Download_Station`:
+Navigate to the new `MMM-Synology-Download_Station` with:
 ```
 cd MMM-Synology-Download_Station
 ```
@@ -55,16 +54,34 @@ To use this module, add it to the modules array in the `config/config.js` file.
 ```javascript
 modules: [
   {
-  module: 'MMM-Synology-Download_Station',
-  position: 'top_center',
-  config: {
-    host: 'IP/DNS',     // IP/DNS de votre Synology
-    port: 5001,         // Port HTTPS DSM default
-    useHttps: true,     // Using HTTPS to connect to DSM
-    user: 'username',           
-    passwd: 'password'          
+    module: "MMM-SynologyDownload_Station",
+    position: "top_center",
+    config: {
+      host: "x.x.x.x",           // IP/DNS your Synology NAS
+      port: 5001,                // Port HTTPS DSM default
+      useHttps: true,            // use HTTPS
+      user: "username",          // username
+      passwd: "password",        // Password
+      refreshInterval: 10,       // in seconds
+      maxItems: 8,
+      compactMode: true,
+      displayColumns: {
+        status_icon: true,
+        title: true,
+        percent_completed: true,
+        size: true,
+        speed_download: true,
+        speed_upload: true
+      },
+      displayTasks: {
+        seeding: true,
+        downloading: true,
+        finished: true,
+        error: true,
+        paused: true
+      }
+    }
   }
-}
 ]
 ```
 
@@ -75,7 +92,7 @@ The following properties can be configured:
 | Option                       | Description
 | ---------------------------- | -----------
 | `host`                       | Synology Hostname/IP.  <br><br>**Required**<br>**Possible values:** `localhost`, `url` or a IP<br>**Default value:** `null`
-| `port`                       | Synology port.  <br><br><br>**Default value:** ` 5000 ` (Default Synology port)
+| `port`                       | Synology port.  <br><br><br>**Default value:** ` 5001 ` (Default Synology port for HTTPS)
 | `user`                       | Synology account.  <br><br>**Required**<br>**Default value:** `null`
 | `passwd`                     | Account password.  <br><br>**Required**<br>**Default value:** `null`
 | `refreshInterval`            | The refresh interval (in seconds).<br><br>**Default value:** `10`
@@ -85,117 +102,3 @@ The following properties can be configured:
 | `textSize`                   | <br><br>**Possible values:** `xsmall`, `small`, `medium`, `large`, `xlarge`<br>**Default value:** `xsmall`
 | `iconSize`                   | Size of FontAwesome icons<br><br>**Possible values:** `xsmall`, `small`, `medium`, `large`, `xlarge`<br>**Default value:** `small`
 | `msgEmptyList`	           | Display message when no tasks on Download Station<br><br>**Possible values:** Any string you want!<br>**Default value:** `No task`
-
-
-
-Additional settings are available to :
-
-- Display / hide columns
-- Display / hide tasks (by status)
-
-## Additional configuration : Display / hide columns
-
-The <code>displayColumns</code> property contains the list of each column you can display/hide
-
-| Option                       | Description
-| ---------------------------- | -----------
-| `id`                         | Display task ID (used for debug)<br><br>**Possible values:** `true` or `false`<br>**Default value:** `false`
-| `status_icon`                | Display task status (FontAwesome icon)<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `status`                     | Display task status (text)<br><br>**Possible values:** `true` or `false`<br>**Default value:** `false`
-| `title`                      | Display task title<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `size`                       | Display size of download task<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `percent_completed`          | Display percentage download completed<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `download_icon`              | Display download speed icon<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `speed_download`             | Display download speed value<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `upload_icon`                | Display upload speed icon<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `speed_upload`               | Display upload speed value<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-
-
-### Example :
-
-```javascript
-modules: [
-  {
-    module: 'MMM-Synology-Download_Station',
-    position: 'left_bottom',
-    header: 'Download Station',
-    config: {
-      host: 'my.synology-ds.com',
-      port: '5000', // Server port (not required if default port (5000) is used)
-      login: 'account',
-      passwd: 'password',
-      refreshInterval: 10, // in seconds
-      compactMode: true, // recommanded in left or right position.
-    
-      displayColumns: {
-          id: false, 
-          status_icon: true, 
-          statuts: false, 
-          title: true, 
-          size: true, 
-          percent_completed: true, 
-          download_icon: true, 
-          speed_download: true, 
-          upload_icon: true, 
-          speed_upload: true
-        }
-
-   },
-]
-```
-
-## Additional configuration : Display / hide tasks
-
-The <code>displayTasks</code> property contains the list of tasks status you can display/hide. 
-
-By default, all status are displayed. But, most important tasks will be displayed first : 
-
-Priority :
- 
-	1. Error
-	2. Finished
-	3. Downloading
-	4. Hash checking
-	5. Waiting
-	6. Paused
-	7. Seeding (Task discarded if no upload in progress)
-
-| Option                       | Description
-| ---------------------------- | -----------
-| `finished`                   | Finished task (download completed, but not seeding)<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `downloading`                | Download in progress Task<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `waiting`                    | Waiting task (Download will start shortly)<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `hash_checking`              | Checking current task integrity<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `paused`                     | Paused task<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `seeding`                    | Download completed, sharing.<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `error`                      | Error task<br><br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-
-
-### Example :
-
-```javascript
-modules: [
-  {
-    module: 'MMM-Synology-Download_Station',
-    position: 'left_bottom',
-    header: 'Download Station',
-    config: {
-      host: 'my.synology-ds.com',
-      port: '5000', // Server port (not required if default port (5000) is used)
-      login: 'account',
-      passwd: 'password',
-      refreshInterval: 10, // in seconds
-      compactMode: true, // recommanded in left or right position.
-    
-      displayTasks: {
-          finished: true, 
-          downloading: true, 
-          waiting: true, 
-          hash_checking: true, 
-          paused: true, 
-          seeding: true,
-          error: true
-      }
-   },
-]
-```
