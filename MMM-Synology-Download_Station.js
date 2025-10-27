@@ -1,4 +1,4 @@
-Module.register("MMM-SynologyDownloadStation", {
+Module.register("MMM-SynologyDownload_Station", {
   defaults: {
     host: null,
     port: "5000",
