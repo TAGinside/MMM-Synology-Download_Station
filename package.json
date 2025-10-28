@@ -1,6 +1,6 @@
 {
   "name": "MMM-Synology-Download_Station",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MagicMirror module pour afficher les tâches Download Station Synology",
   "main": "MMM-Synology-Download_Station.js",
   "dependencies": {
