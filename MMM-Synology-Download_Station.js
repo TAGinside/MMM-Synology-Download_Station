@@ -28,7 +28,7 @@ Module.register("MMM-Synology-Download_Station", {
       seeding: true,
       error: true
     },
-    msgEmptyList: "Aucun téléchargement",
+    msgEmptyList: "No Download Tasks",
   },
 
   start: function() {
@@ -49,8 +49,14 @@ Module.register("MMM-Synology-Download_Station", {
     var wrapper = document.createElement("div");
     wrapper.className = "MMM-Synology-Download_Station";
 
+    if (this.data.header) {
+      var header = document.createElement("header");
+      header.innerHTML = this.data.header;
+      wrapper.appendChild(header);
+    }
+
     if (!this.loaded) {
-      wrapper.innerHTML = "Chargement des tâches…";
+      wrapper.innerHTML = "Searching for tasks...";
       return wrapper;
     }
 
@@ -91,33 +97,33 @@ Module.register("MMM-Synology-Download_Station", {
   },
 
   _iconCell: function(task) {
-  var cell = document.createElement("td");
-  var icon = document.createElement("i");
-  let iconClass = '';
-  let iconColor = '';
+    var cell = document.createElement("td");
+    var icon = document.createElement("i");
+    let iconClass = '';
+    let iconColor = '';
 
-  if (task.status === "downloading") {
-    iconClass = "fa fa-arrow-down";
-    iconColor = "cyan"; // Couleur pour téléchargement
-  } else if (task.status === "seeding") {
-    iconClass = "fa fa-arrow-up";
-    iconColor = "green"; // Couleur pour partage
-  } else if (task.status === "error") {
-    iconClass = "fa fa-exclamation-triangle"; // Icône d'erreur
-    iconColor = "red"; // Couleur pour erreur
-  } else if (task.status === "paused") {
-    iconClass = "fa fa-pause"; // Icône pause
-    iconColor = "gray";        // Couleur pour pause
-  } else {
-    iconClass = "fa fa-question-circle"; // Par défaut
-    iconColor = "gray";
-  }
+    if (task.status === "downloading") {
+      iconClass = "fa fa-arrow-down";
+      iconColor = "cyan"; // Couleur pour téléchargement
+    } else if (task.status === "seeding") {
+      iconClass = "fa fa-arrow-up";
+      iconColor = "green"; // Couleur pour partage
+    } else if (task.status === "error") {
+      iconClass = "fa fa-exclamation-triangle"; // Icône d'erreur
+      iconColor = "red"; // Couleur pour erreur
+    } else if (task.status === "paused") {
+      iconClass = "fa fa-pause"; // Icône pause
+      iconColor = "gray";        // Couleur pour pause
+    } else {
+      iconClass = "fa fa-question-circle"; // Par défaut
+      iconColor = "gray";
+    }
 
-  icon.className = iconClass;
-  icon.style.color = iconColor; // Définition couleur en inline style depuis JS
-  cell.appendChild(icon);
-  return cell;
-},
+    icon.className = iconClass;
+    icon.style.color = iconColor; // Définition couleur en inline style depuis JS
+    cell.appendChild(icon);
+    return cell;
+  },
 
   _textCell: function(text, maxLen) {
     var cell = document.createElement("td");
@@ -138,13 +144,20 @@ Module.register("MMM-Synology-Download_Station", {
       this.taskList = payload;
       this.loaded = true;
       
+      // Afficher/Cacher module selon la présence de tâches
+      if (this.taskList.length === 0) {
+        this.hide(1000); // Cache le module sur 1 seconde
+      } else {
+        this.show(1000); // Affiche le module sur 1 seconde
+        this.updateDom();
+      }
+
       // Log pourcentage pour chaque tâche reçue
       payload.forEach(task => {
         console.log(`[MMM-Synology-Download_Station] ${task.title} - ${task.percent_completed}%`);
       });
 
-      this.updateDom();
-
+      // Log pour téléchargement actif
       payload.forEach(task => {
         if (task.status === "downloading") {
           console.log(`[MMM-Synology-Download_Station] Active Download : ${task.title} (${task.percent_completed}%)`);
@@ -156,6 +169,8 @@ Module.register("MMM-Synology-Download_Station", {
       this.loaded = false;
       this.taskList = [];
       this.updateDom();
+      this.hide(1000);
     }
   }
 });
+// End of file
