@@ -1,7 +1,7 @@
 .MMM-Synology-Download_Station table {
   width: 100%;
-  font-size: 0.85em;
   border-collapse: collapse;
+  font-size: 0.85em;
 }
 
 .MMM-Synology-Download_Station td {
@@ -12,33 +12,30 @@
 .MMM-Synology-Download_Station .fa {
   margin-right: 6px;
   font-size: 1.2em;
-  color: #55d;
 }
 
+/* Gestion des couleurs par classe */
+.MMM-Synology-Download_Station .downloading {
+  color: cyan;
+}
+
+.MMM-Synology-Download_Station .seeding {
+  color: green;
+}
+
+.MMM-Synology-Download_Station .paused {
+  color: gray;
+}
+
+.MMM-Synology-Download_Station .error {
+  color: red;
+}
+
+/* Tailles de texte */
 .MMM-Synology-Download_Station .xsmall {
   font-size: 0.83em;
 }
 
 .MMM-Synology-Download_Station .small {
   font-size: 0.96em;
-}
-
-/* Flèche bleue pour téléchargement */
-.MMM-Synology-Download_Station .downloading {
-  color: cyan;
-}
-
-/* Flèche verte pour partage (seeding) */
-.MMM-Synology-Download_Station .seeding {
-  color: green;
-}
-
-/* Flèche grise pour en pause */
-.MMM-Synology-Download_Station .paused {
-  color: gray;
-}
-
-/* Exclamation pour la couleur rouge d'erreur */
-.MMM-Synology-Download_Station .error {
-  color: red;
 }
