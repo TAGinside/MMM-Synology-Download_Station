@@ -39,11 +39,10 @@ module.exports = NodeHelper.create({
   
   if (!response.data.success) throw new Error("Récupération des tâches Synology échouée");
 
-  // Regroupement des logs des statuts des tâches et du compte total
-  const allStatuses = response.data.data.tasks.map(task => `"${task.title}": ${task.status}`).join(", ");
-  const taskCount = response.data.data.tasks.length;
-  
-  console.log(`[MMM-Synology-Download_Station] Tâches récupérées: ${taskCount} | Statuts: ${allStatuses}`);
+  // Log des statuts et pourcentages pour chaque tâche
+  response.data.data.tasks.forEach(task => {
+    console.log(`[MMM-Synology-Download_Station] API - Tâche "${task.title}" statut: ${task.status}, % complété: ${task.additional?.transfer?.percent_completed || 0}`);
+  });
 
   const taskList = response.data.data.tasks.filter(task =>
     config.displayTasks[task.status]
@@ -59,7 +58,6 @@ module.exports = NodeHelper.create({
     speed_upload: task.additional?.transfer?.speed_upload || 0
   }));
 },
-
 
   _logout: async function(sessionId, config) {
     const protocol = config.useHttps ? "https" : "http";
