@@ -14,23 +14,6 @@
   font-size: 1.2em;
 }
 
-/* Couleurs avec spécificité accrue */
-.MMM-Synology-Download_Station i.fa.downloading {
-  color: cyan !important;
-}
-
-.MMM-Synology-Download_Station i.fa.seeding {
-  color: green !important;
-}
-
-.MMM-Synology-Download_Station i.fa.paused {
-  color: gray !important;
-}
-
-.MMM-Synology-Download_Station i.fa.error {
-  color: red !important;
-}
-
 /* Tailles de texte */
 .MMM-Synology-Download_Station .xsmall {
   font-size: 0.83em;

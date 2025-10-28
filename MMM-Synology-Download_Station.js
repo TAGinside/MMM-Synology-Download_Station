@@ -28,11 +28,11 @@ Module.register("MMM-Synology-Download_Station", {
       seeding: true,
       error: true
     },
-    msgEmptyList: "Aucun téléchargement",
+    msgEmptyList: "No Download Tasks",
   },
 
   start: function() {
-    console.log("[MMM-Synology-Download_Station] Module lancé !");
+    console.log("[MMM-Synology-Download_Station] Module launched !");
     this.taskList = [];
     this.sendSocketNotification("DS_INIT", this.config);
     this.loaded = false;
@@ -48,9 +48,9 @@ Module.register("MMM-Synology-Download_Station", {
   getDom: function() {
     var wrapper = document.createElement("div");
     wrapper.className = "MMM-Synology-Download_Station";
-
+    
     if (!this.loaded) {
-      wrapper.innerHTML = "Chargement des tâches…";
+      wrapper.innerHTML = "Searching for tasks...";
       return wrapper;
     }
 
@@ -91,31 +91,33 @@ Module.register("MMM-Synology-Download_Station", {
   },
 
   _iconCell: function(task) {
-  var cell = document.createElement("td");
-  var icon = document.createElement("i");
-  let iconClass = '';
-  let statusClass = '';
+    var cell = document.createElement("td");
+    var icon = document.createElement("i");
+    let iconClass = '';
+    let iconColor = '';
 
-  if (task.status === "downloading") {
-    iconClass = "fa fa-arrow-down";
-    statusClass = "downloading"; // Classe CSS pour téléchargement
-  } else if (task.status === "seeding") {
-    iconClass = "fa fa-arrow-up";
-    statusClass = "seeding"; // Classe CSS pour partage
-  } else if (task.status === "error") {
-    iconClass = "fa fa-exclamation-triangle"; // Icône d'erreur
-    statusClass = "error"; // Classe CSS pour erreur
-  } else {
-    iconClass = "fa fa-question-circle"; // Icône par défaut
-    statusClass = "default"; // Classe CSS générique ou aucune
-  }
+    if (task.status === "downloading") {
+      iconClass = "fa fa-arrow-down";
+      iconColor = "cyan"; // Couleur pour téléchargement
+    } else if (task.status === "seeding") {
+      iconClass = "fa fa-arrow-up";
+      iconColor = "green"; // Couleur pour partage
+    } else if (task.status === "error") {
+      iconClass = "fa fa-exclamation-triangle"; // Icône d'erreur
+      iconColor = "red"; // Couleur pour erreur
+    } else if (task.status === "paused") {
+      iconClass = "fa fa-pause"; // Icône pause
+      iconColor = "gray";        // Couleur pour pause
+    } else {
+      iconClass = "fa fa-question-circle"; // Par défaut
+      iconColor = "gray";
+    }
 
-  icon.className = iconClass + " " + statusClass;
-  // Ne pas définir icon.style.color ici, laisser le CSS gérer la couleur
-  cell.appendChild(icon);
-  return cell;
+    icon.className = iconClass;
+    icon.style.color = iconColor; // Définition couleur en inline style depuis JS
+    cell.appendChild(icon);
+    return cell;
   },
-
 
   _textCell: function(text, maxLen) {
     var cell = document.createElement("td");
@@ -132,28 +134,37 @@ Module.register("MMM-Synology-Download_Station", {
 
   socketNotificationReceived: function(notification, payload) {
     if (notification === "DS_RESULT") {
-      console.log("[MMM-Synology-Download_Station] Tâches Synology reçues :", payload.length);
+      console.log("[MMM-Synology-Download_Station] Synology-NAS Task Received :", payload.length);
       this.taskList = payload;
       this.loaded = true;
       
+      // Afficher/Cacher module selon la présence de tâches
+      if (this.taskList.length === 0) {
+        this.hide(1000); // Cache le module sur 1 seconde
+      } else {
+        this.show(1000); // Affiche le module sur 1 seconde
+        this.updateDom();
+      }
+
       // Log pourcentage pour chaque tâche reçue
       payload.forEach(task => {
         console.log(`[MMM-Synology-Download_Station] ${task.title} - ${task.percent_completed}%`);
       });
 
-      this.updateDom();
-
+      // Log pour téléchargement actif
       payload.forEach(task => {
         if (task.status === "downloading") {
-          console.log(`[MMM-Synology-Download_Station] Téléchargement actif : ${task.title} (${task.percent_completed}%)`);
+          console.log(`[MMM-Synology-Download_Station] Active Download : ${task.title} (${task.percent_completed}%)`);
         }
       });
     }
     if (notification === "DS_ERROR") {
-      console.log("[MMM-Synology-Download_Station] Erreur Synology:", payload);
+      console.log("[MMM-Synology-Download_Station] Synology-NAS Error:", payload);
       this.loaded = false;
       this.taskList = [];
       this.updateDom();
+      this.hide(1000);
     }
   }
 });
+// End of file

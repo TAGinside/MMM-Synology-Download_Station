@@ -1,5 +1,5 @@
-# Synology Download Station
-1 Module: MMM-Synology-Download_Station
+# Synology Download Station Module for MagicMirror
+Module: MMM-Synology-Download_Station
 
 This [MagicMirror](https://github.com/MichMich/MagicMirror) module, display Synology Download Station tasks.
 
@@ -56,7 +56,8 @@ To use this module, add it to the modules array in the `config/config.js` file.
 modules: [
   {
     module: "MMM-SynologyDownload_Station",
-    position: "top_center",
+    position: "bottom_left",
+    header: "Synology Download Station",
     config: {
       host: "x.x.x.x",           // IP/DNS your Synology NAS
       port: 5001,                // Port HTTPS DSM default
