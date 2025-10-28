@@ -32,7 +32,13 @@
 .MMM-Synology-Download_Station .seeding {
   color: green;
 }
+
 /* Flèche grise pour en pause */
 .MMM-Synology-Download_Station .paused {
   color: gray;
+}
+
+/* Exclamation pour la couleur rouge d'erreur */
+.MMM-Synology-Download_Station .error {
+  color: red;
 }

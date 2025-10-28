@@ -91,26 +91,30 @@ Module.register("MMM-Synology-Download_Station", {
   },
 
   _iconCell: function(task) {
-    var cell = document.createElement("td");
-    var icon = document.createElement("i");
-    let colorClass = '';
-    let iconClass = '';
+  var cell = document.createElement("td");
+  var icon = document.createElement("i");
+  let iconClass = '';
+  let iconColor = '';
 
-    if (task.status === "downloading") {
-      iconClass = "fa fa-arrow-down";
-      colorClass = "downloading"; // Cyan
-    } else if (task.status === "seeding") {
-      iconClass = "fa fa-arrow-up";
-      colorClass = "seeding"; // Vert
-    } else {
-      iconClass = "fa fa-arrow-down"; // Par défaut
-      colorClass = "default"; 
-    }
+  if (task.status === "downloading") {
+    iconClass = "fa fa-arrow-down";
+    iconColor = "cyan"; // Couleur pour téléchargement
+  } else if (task.status === "seeding") {
+    iconClass = "fa fa-arrow-up";
+    iconColor = "green"; // Couleur pour partage
+  } else if (task.status === "error") {
+    iconClass = "fa fa-exclamation-triangle"; // Icône d'erreur
+    iconColor = "red"; // Couleur pour erreur
+  } else {
+    iconClass = "fa fa-question-circle"; // Autre statuts ou par défaut
+    iconColor = "gray";
+  }
 
-    icon.className = iconClass + " " + colorClass;
-    cell.appendChild(icon);
-    return cell;
-  },
+  icon.className = iconClass;
+  icon.style.color = iconColor;
+  cell.appendChild(icon);
+  return cell;
+},
 
   _textCell: function(text, maxLen) {
     var cell = document.createElement("td");
