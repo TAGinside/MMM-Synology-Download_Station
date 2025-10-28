@@ -39,24 +39,32 @@ module.exports = NodeHelper.create({
   
   if (!response.data.success) throw new Error("Récupération des tâches Synology échouée");
 
-  // Log des statuts et pourcentages pour chaque tâche
   response.data.data.tasks.forEach(task => {
-    console.log(`[MMM-Synology-Download_Station] API - Tâche "${task.title}" statut: ${task.status}, % complété: ${task.additional?.transfer?.percent_completed || 0}`);
+    const sizeDownloaded = task.additional?.transfer?.size_downloaded || 0;
+    const totalSize = task.size || 1;
+    const percentProgress = Math.round((sizeDownloaded / totalSize) * 100);
+    console.log(`[MMM-Synology-Download_Station] API - Tâche "${task.title}" statut: ${task.status}, % complété: ${percentProgress}`);
   });
 
   const taskList = response.data.data.tasks.filter(task =>
     config.displayTasks[task.status]
   );
 
-  return taskList.slice(0, config.maxItems).map(task => ({
-    id: task.id,
-    title: task.title,
-    size: task.size,
-    percent_completed: task.additional?.transfer?.percent_completed || 0,
-    status: task.status,
-    speed_download: task.additional?.transfer?.speed_download || 0,
-    speed_upload: task.additional?.transfer?.speed_upload || 0
-  }));
+  return taskList.slice(0, config.maxItems).map(task => {
+    const sizeDownloaded = task.additional?.transfer?.size_downloaded || 0;
+    const totalSize = task.size || 1;
+    const percentProgress = Math.round((sizeDownloaded / totalSize) * 100);
+
+    return {
+      id: task.id,
+      title: task.title,
+      size: task.size,
+      percent_completed: percentProgress,
+      status: task.status,
+      speed_download: task.additional?.transfer?.speed_download || 0,
+      speed_upload: task.additional?.transfer?.speed_upload || 0
+    };
+  });
 },
 
   _logout: async function(sessionId, config) {
