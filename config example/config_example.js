@@ -1,7 +1,8 @@
 modules: [
   {
     module: "MMM-SynologyDownload_Station",
-    position: "top_center",
+    position: "bottom_left",
+    header: "Synology Download Station",
     config: {
       host: "x.x.x.x",           // IP/DNS your Synology NAS
       port: 5001,                // Port HTTPS DSM default

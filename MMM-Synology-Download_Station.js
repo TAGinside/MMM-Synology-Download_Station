@@ -48,13 +48,7 @@ Module.register("MMM-Synology-Download_Station", {
   getDom: function() {
     var wrapper = document.createElement("div");
     wrapper.className = "MMM-Synology-Download_Station";
-
-    if (this.data.header) {
-      var header = document.createElement("header");
-      header.innerHTML = this.data.header;
-      wrapper.appendChild(header);
-    }
-
+    
     if (!this.loaded) {
       wrapper.innerHTML = "Searching for tasks...";
       return wrapper;
