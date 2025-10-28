@@ -14,21 +14,21 @@
   font-size: 1.2em;
 }
 
-/* Gestion des couleurs par classe */
-.MMM-Synology-Download_Station .downloading {
-  color: cyan;
+/* Couleurs avec spécificité accrue */
+.MMM-Synology-Download_Station i.fa.downloading {
+  color: cyan !important;
 }
 
-.MMM-Synology-Download_Station .seeding {
-  color: green;
+.MMM-Synology-Download_Station i.fa.seeding {
+  color: green !important;
 }
 
-.MMM-Synology-Download_Station .paused {
-  color: gray;
+.MMM-Synology-Download_Station i.fa.paused {
+  color: gray !important;
 }
 
-.MMM-Synology-Download_Station .error {
-  color: red;
+.MMM-Synology-Download_Station i.fa.error {
+  color: red !important;
 }
 
 /* Tailles de texte */
