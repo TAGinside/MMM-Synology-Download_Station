@@ -32,7 +32,7 @@ Module.register("MMM-Synology-Download_Station", {
   },
 
   start: function() {
-    console.log("[MMM-Synology-Download_Station] Module lancé !");
+    console.log("[MMM-Synology-Download_Station] Module lancé !");
     this.taskList = [];
     this.sendSocketNotification("DS_INIT", this.config);
     this.loaded = false;
@@ -91,12 +91,31 @@ Module.register("MMM-Synology-Download_Station", {
   },
 
   _iconCell: function(task) {
-    var cell = document.createElement("td");
-    var icon = document.createElement("i");
-    icon.className = "fa fa-arrow-down"; // Customise selon status si besoin
-    cell.appendChild(icon);
-    return cell;
+  var cell = document.createElement("td");
+  var icon = document.createElement("i");
+  let iconClass = '';
+  let statusClass = '';
+
+  if (task.status === "downloading") {
+    iconClass = "fa fa-arrow-down";
+    statusClass = "downloading"; // Classe CSS pour téléchargement
+  } else if (task.status === "seeding") {
+    iconClass = "fa fa-arrow-up";
+    statusClass = "seeding"; // Classe CSS pour partage
+  } else if (task.status === "error") {
+    iconClass = "fa fa-exclamation-triangle"; // Icône d'erreur
+    statusClass = "error"; // Classe CSS pour erreur
+  } else {
+    iconClass = "fa fa-question-circle"; // Icône par défaut
+    statusClass = "default"; // Classe CSS générique ou aucune
+  }
+
+  icon.className = iconClass + " " + statusClass;
+  // Ne pas définir icon.style.color ici, laisser le CSS gérer la couleur
+  cell.appendChild(icon);
+  return cell;
   },
+
 
   _textCell: function(text, maxLen) {
     var cell = document.createElement("td");
@@ -113,13 +132,20 @@ Module.register("MMM-Synology-Download_Station", {
 
   socketNotificationReceived: function(notification, payload) {
     if (notification === "DS_RESULT") {
-      console.log("[MMM-Synology-Download_Station] Tâches Synology reçues :", payload.length);
+      console.log("[MMM-Synology-Download_Station] Tâches Synology reçues :", payload.length);
       this.taskList = payload;
       this.loaded = true;
+      
+      // Log pourcentage pour chaque tâche reçue
+      payload.forEach(task => {
+        console.log(`[MMM-Synology-Download_Station] ${task.title} - ${task.percent_completed}%`);
+      });
+
       this.updateDom();
+
       payload.forEach(task => {
         if (task.status === "downloading") {
-          console.log(`[MMM-Synology-Download_Station] Téléchargement actif : ${task.title} (${task.percent_completed}%)`);
+          console.log(`[MMM-Synology-Download_Station] Téléchargement actif : ${task.title} (${task.percent_completed}%)`);
         }
       });
     }

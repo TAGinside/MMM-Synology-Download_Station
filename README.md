@@ -1,5 +1,5 @@
 # Synology Download Station
-Module: MMM-Synology-Download_Station
+1 Module: MMM-Synology-Download_Station
 
 This [MagicMirror](https://github.com/MichMich/MagicMirror) module, display Synology Download Station tasks.
 

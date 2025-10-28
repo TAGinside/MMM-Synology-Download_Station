@@ -1,3 +1,10 @@
+# notes amélioration
+## graphiques
+- pouvoir avoir une vue si en pause (logo gris)
+## fonctionnels
+
+
+
 # Script de lancement MM
 
 ```
@@ -9,7 +16,7 @@ npm start
 ```
 cd ~/MagicMirror/modules
 rm -rf MMM-Synology-Download_Station
-git clone https://github.com/TAGinside/MMM-Synology-Download_Station
+git clone --branch Beta https://github.com/TAGinside/MMM-Synology-Download_Station
 cd MMM-Synology-Download_Station
 npm install
 ```

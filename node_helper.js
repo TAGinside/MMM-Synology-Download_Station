@@ -33,24 +33,41 @@ module.exports = NodeHelper.create({
   },
 
   _getTasks: async function(sessionId, config) {
-    const protocol = config.useHttps ? "https" : "http";
-    const url = `${protocol}://${config.host}:${config.port}/webapi/DownloadStation/task.cgi?api=SYNO.DownloadStation.Task&version=1&method=list&_sid=${sessionId}`;
-    const response = await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
-    if (!response.data.success) throw new Error("Récupération des tâches Synology échouée");
-    const taskList = response.data.data.tasks.filter(task =>
-      config.displayTasks[task.status]
-    );
-    console.log(`[MMM-Synology-Download_Station] Tâches récupérées: ${taskList.length}`);
-    return taskList.slice(0, config.maxItems).map(task => ({
+  const protocol = config.useHttps ? "https" : "http";
+  const url = `${protocol}://${config.host}:${config.port}/webapi/DownloadStation/task.cgi?api=SYNO.DownloadStation.Task&version=1&method=list&additional=detail,transfer&_sid=${sessionId}`;
+  const response = await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
+  
+  if (!response.data.success) throw new Error("Récupération des tâches Synology échouée");
+
+  response.data.data.tasks.forEach(task => {
+    const sizeDownloaded = task.additional?.transfer?.size_downloaded || 0;
+    const totalSize = task.size || 1;
+    const percentProgress = ((sizeDownloaded / totalSize) * 100).toFixed(1);
+
+    console.log(`[MMM-Synology-Download_Station] API - Tâche "${task.title}" statut: ${task.status}, % complété: ${percentProgress}`);
+  });
+
+  const taskList = response.data.data.tasks.filter(task =>
+    config.displayTasks[task.status]
+  );
+
+  return taskList.slice(0, config.maxItems).map(task => {
+    const sizeDownloaded = task.additional?.transfer?.size_downloaded || 0;
+    const totalSize = task.size || 1;
+    const percentProgress = ((sizeDownloaded / totalSize) * 100).toFixed(1);
+
+
+    return {
       id: task.id,
       title: task.title,
       size: task.size,
-      percent_completed: task.additional?.transfer?.percent_completed || 0,
+      percent_completed: percentProgress,
       status: task.status,
       speed_download: task.additional?.transfer?.speed_download || 0,
       speed_upload: task.additional?.transfer?.speed_upload || 0
-    }));
-  },
+    };
+  });
+},
 
   _logout: async function(sessionId, config) {
     const protocol = config.useHttps ? "https" : "http";
