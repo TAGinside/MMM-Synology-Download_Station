@@ -3,12 +3,12 @@ const axios = require("axios");
 
 module.exports = NodeHelper.create({
   start: function() {
-    console.log("[MMM-Synology-Download_Station] node_helper démarré.");
+    console.log("[MMM-Synology-Download_Station] node_helper Started.");
   },
 
   socketNotificationReceived: async function(notification, payload) {
     if (notification === "DS_INIT") {
-      console.log("[MMM-Synology-Download_Station] Configuration reçue:", payload);
+      //console.log("[MMM-Synology-Download_Station] Configuration reçue:", payload);
     }
     if (notification === "DS_GET") {
       try {
@@ -18,7 +18,7 @@ module.exports = NodeHelper.create({
         await this._logout(sessionId, payload);
       } catch (err) {
         this.sendSocketNotification("DS_ERROR", err.message || err);
-        console.log("[MMM-Synology-Download_Station] Erreur back:", err.message || err);
+        console.log("[MMM-Synology-Download_Station] Error back-end:", err.message || err);
       }
     }
   },
@@ -27,8 +27,8 @@ module.exports = NodeHelper.create({
     const protocol = config.useHttps ? "https" : "http";
     const url = `${protocol}://${config.host}:${config.port}/webapi/auth.cgi?api=SYNO.API.Auth&method=login&version=6&account=${config.user}&passwd=${config.passwd}&session=DownloadStation&format=sid`;
     const response = await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
-    if (!response.data.success) throw new Error("Connexion Synology échouée");
-    console.log("[MMM-Synology-Download_Station] Connexion Synology réussie.");
+    if (!response.data.success) throw new Error("Connexion Synology-NAS Failed");
+    console.log("[MMM-Synology-Download_Station] Connexion Synology-NAS OK.");
     return response.data.data.sid;
   },
 
@@ -44,7 +44,7 @@ module.exports = NodeHelper.create({
     const totalSize = task.size || 1;
     const percentProgress = ((sizeDownloaded / totalSize) * 100).toFixed(1);
 
-    console.log(`[MMM-Synology-Download_Station] API - Tâche "${task.title}" statut: ${task.status}, % complété: ${percentProgress}`);
+    console.log(`[MMM-Synology-Download_Station] API - Task "${task.title}" status: ${task.status}, % complete: ${percentProgress}`);
   });
 
   const taskList = response.data.data.tasks.filter(task =>
@@ -73,6 +73,6 @@ module.exports = NodeHelper.create({
     const protocol = config.useHttps ? "https" : "http";
     const url = `${protocol}://${config.host}:${config.port}/webapi/auth.cgi?api=SYNO.API.Auth&method=logout&version=6&session=DownloadStation&_sid=${sessionId}`;
     await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
-    console.log("[MMM-Synology-Download_Station] Déconnexion Synology.");
+    console.log("[MMM-Synology-Download_Station] Disconnect Synology-NAS.");
   }
 });

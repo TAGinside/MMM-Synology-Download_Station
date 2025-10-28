@@ -32,7 +32,7 @@ Module.register("MMM-Synology-Download_Station", {
   },
 
   start: function() {
-    console.log("[MMM-Synology-Download_Station] Module lancé !");
+    console.log("[MMM-Synology-Download_Station] Module launched !");
     this.taskList = [];
     this.sendSocketNotification("DS_INIT", this.config);
     this.loaded = false;
@@ -134,7 +134,7 @@ Module.register("MMM-Synology-Download_Station", {
 
   socketNotificationReceived: function(notification, payload) {
     if (notification === "DS_RESULT") {
-      console.log("[MMM-Synology-Download_Station] Tâches Synology reçues :", payload.length);
+      console.log("[MMM-Synology-Download_Station] Synology-NAS Task Received :", payload.length);
       this.taskList = payload;
       this.loaded = true;
       
@@ -147,12 +147,12 @@ Module.register("MMM-Synology-Download_Station", {
 
       payload.forEach(task => {
         if (task.status === "downloading") {
-          console.log(`[MMM-Synology-Download_Station] Téléchargement actif : ${task.title} (${task.percent_completed}%)`);
+          console.log(`[MMM-Synology-Download_Station] Active Download : ${task.title} (${task.percent_completed}%)`);
         }
       });
     }
     if (notification === "DS_ERROR") {
-      console.log("[MMM-Synology-Download_Station] Erreur Synology:", payload);
+      console.log("[MMM-Synology-Download_Station] Synology-NAS Error:", payload);
       this.loaded = false;
       this.taskList = [];
       this.updateDom();
