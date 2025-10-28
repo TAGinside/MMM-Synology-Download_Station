@@ -25,7 +25,7 @@
 
 /* Flèche bleue pour téléchargement */
 .MMM-Synology-Download_Station .downloading {
-  color: blue;
+  color: cyan;
 }
 
 /* Flèche verte pour partage (seeding) */
