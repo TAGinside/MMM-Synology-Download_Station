@@ -1,3 +1,10 @@
+# notes amélioration
+## graphiques
+- pouvoir avoir une vue si en pause (logo gris)
+## fonctionnels
+
+
+
 # Script de lancement MM
 
 ```

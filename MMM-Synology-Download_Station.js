@@ -91,12 +91,21 @@ Module.register("MMM-Synology-Download_Station", {
   },
 
   _iconCell: function(task) {
-    var cell = document.createElement("td");
-    var icon = document.createElement("i");
-    icon.className = "fa fa-arrow-down"; // Customise selon status si besoin
-    cell.appendChild(icon);
-    return cell;
+  var cell = document.createElement("td");
+  var icon = document.createElement("i");
+
+  if (task.status === "downloading") {
+    icon.className = "fa fa-arrow-down downloading";
+  } else if (task.status === "seeding") {
+    icon.className = "fa fa-arrow-up seeding";
+  } else {
+    icon.className = "fa fa-arrow-down"; // statut par défaut
+  }
+
+  cell.appendChild(icon);
+  return cell;
   },
+
 
   _textCell: function(text, maxLen) {
     var cell = document.createElement("td");

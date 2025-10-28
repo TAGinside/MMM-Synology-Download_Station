@@ -33,24 +33,33 @@ module.exports = NodeHelper.create({
   },
 
   _getTasks: async function(sessionId, config) {
-    const protocol = config.useHttps ? "https" : "http";
-    const url = `${protocol}://${config.host}:${config.port}/webapi/DownloadStation/task.cgi?api=SYNO.DownloadStation.Task&version=1&method=list&_sid=${sessionId}`;
-    const response = await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
-    if (!response.data.success) throw new Error("Récupération des tâches Synology échouée");
-    const taskList = response.data.data.tasks.filter(task =>
-      config.displayTasks[task.status]
-    );
-    console.log(`[MMM-Synology-Download_Station] Tâches récupérées: ${taskList.length}`);
-    return taskList.slice(0, config.maxItems).map(task => ({
-      id: task.id,
-      title: task.title,
-      size: task.size,
-      percent_completed: task.additional?.transfer?.percent_completed || 0,
-      status: task.status,
-      speed_download: task.additional?.transfer?.speed_download || 0,
-      speed_upload: task.additional?.transfer?.speed_upload || 0
-    }));
-  },
+  const protocol = config.useHttps ? "https" : "http";
+  const url = `${protocol}://${config.host}:${config.port}/webapi/DownloadStation/task.cgi?api=SYNO.DownloadStation.Task&version=1&method=list&_sid=${sessionId}`;
+  const response = await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
+  
+  if (!response.data.success) throw new Error("Récupération des tâches Synology échouée");
+
+  // Regroupement des logs des statuts des tâches et du compte total
+  const allStatuses = response.data.data.tasks.map(task => `"${task.title}": ${task.status}`).join(", ");
+  const taskCount = response.data.data.tasks.length;
+  
+  console.log(`[MMM-Synology-Download_Station] Tâches récupérées: ${taskCount} | Statuts: ${allStatuses}`);
+
+  const taskList = response.data.data.tasks.filter(task =>
+    config.displayTasks[task.status]
+  );
+
+  return taskList.slice(0, config.maxItems).map(task => ({
+    id: task.id,
+    title: task.title,
+    size: task.size,
+    percent_completed: task.additional?.transfer?.percent_completed || 0,
+    status: task.status,
+    speed_download: task.additional?.transfer?.speed_download || 0,
+    speed_upload: task.additional?.transfer?.speed_upload || 0
+  }));
+},
+
 
   _logout: async function(sessionId, config) {
     const protocol = config.useHttps ? "https" : "http";

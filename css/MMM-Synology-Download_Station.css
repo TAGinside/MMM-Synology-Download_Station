@@ -22,3 +22,17 @@
 .MMM-Synology-Download_Station .small {
   font-size: 0.96em;
 }
+
+/* Flèche bleue pour téléchargement */
+.MMM-Synology-Download_Station .downloading {
+  color: blue;
+}
+
+/* Flèche verte pour partage (seeding) */
+.MMM-Synology-Download_Station .seeding {
+  color: green;
+}
+/* Flèche grise pour en pause */
+.MMM-Synology-Download_Station .paused {
+  color: gray;
+}
