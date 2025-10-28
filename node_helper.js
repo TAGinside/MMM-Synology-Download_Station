@@ -34,7 +34,7 @@ module.exports = NodeHelper.create({
 
   _getTasks: async function(sessionId, config) {
   const protocol = config.useHttps ? "https" : "http";
-  const url = `${protocol}://${config.host}:${config.port}/webapi/DownloadStation/task.cgi?api=SYNO.DownloadStation.Task&version=1&method=list&_sid=${sessionId}`;
+  const url = `${protocol}://${config.host}:${config.port}/webapi/DownloadStation/task.cgi?api=SYNO.DownloadStation.Task&version=1&method=list&additional=detail,transfer&_sid=${sessionId}`;
   const response = await axios.get(url, { httpsAgent: config.useHttps ? new (require('https').Agent)({ rejectUnauthorized: false }) : undefined });
   
   if (!response.data.success) throw new Error("Récupération des tâches Synology échouée");
