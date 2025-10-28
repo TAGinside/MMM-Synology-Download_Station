@@ -42,7 +42,8 @@ module.exports = NodeHelper.create({
   response.data.data.tasks.forEach(task => {
     const sizeDownloaded = task.additional?.transfer?.size_downloaded || 0;
     const totalSize = task.size || 1;
-    const percentProgress = Math.round((sizeDownloaded / totalSize) * 100);
+    const percentProgress = ((sizeDownloaded / totalSize) * 100).toFixed(1);
+
     console.log(`[MMM-Synology-Download_Station] API - Tâche "${task.title}" statut: ${task.status}, % complété: ${percentProgress}`);
   });
 
@@ -53,7 +54,8 @@ module.exports = NodeHelper.create({
   return taskList.slice(0, config.maxItems).map(task => {
     const sizeDownloaded = task.additional?.transfer?.size_downloaded || 0;
     const totalSize = task.size || 1;
-    const percentProgress = Math.round((sizeDownloaded / totalSize) * 100);
+    const percentProgress = ((sizeDownloaded / totalSize) * 100).toFixed(1);
+
 
     return {
       id: task.id,
