@@ -108,6 +108,11 @@ The following properties can be configured:
 
 If you do not see the module displayed, it is possible that either the connection to Synology NAS is not working, or there are no downloads/uploads in progress.
 To help diagnose the issue, I have set up logs as follows:
-![Debug info](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/master/Screenshot/Screenshot_03.png?raw=true)
+
+if it's OK
+![Debug info OK](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/master/Screenshot/Screenshot_03.png?raw=true)
+
+if it's No OK
+![Debug info NOK](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/master/Screenshot/Screenshot_04.png?raw=true)
 
 I will work on the auto-hide feature so that it can be configured in `config.js`. Stay tuned
