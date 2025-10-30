@@ -14,7 +14,7 @@ compacted mode : <code>bottom_left</code>
 ## Dependencies 
 - An installation of [MagicMirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
 
-## Installation
+# Installation
 
 Navigate into your MagicMirror's `modules` folder:
 ```
@@ -103,4 +103,10 @@ The following properties can be configured:
 | `compactMaxLen`              | Maximum number of caracters of the task name<br><br>**Possible values:** `numeric`<br>**Default value:** `30`
 | `textSize`                   | <br><br>**Possible values:** `xsmall`, `small`, `medium`, `large`, `xlarge`<br>**Default value:** `xsmall`
 | `iconSize`                   | Size of FontAwesome icons<br><br>**Possible values:** `xsmall`, `small`, `medium`, `large`, `xlarge`<br>**Default value:** `small`
-//| `msgEmptyList`	           | Display message when no tasks on Download Station<br><br>**Possible values:** Any string you want!<br>**Default value:** `No task`
+
+## Debug info
+
+If you do not see the module displayed, it is possible that either the connection to Synology NAS is not working, or there are no downloads/uploads in progress.
+![To help diagnose the issue, I have set up logs as follows:](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/master/Screenshot/Screenshot_03.png?raw=true)
+
+I will work on the auto-hide feature so that it can be configured in `config.js`. Stay tuned
