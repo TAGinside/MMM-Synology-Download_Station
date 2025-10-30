@@ -103,4 +103,4 @@ The following properties can be configured:
 | `compactMaxLen`              | Maximum number of caracters of the task name<br><br>**Possible values:** `numeric`<br>**Default value:** `30`
 | `textSize`                   | <br><br>**Possible values:** `xsmall`, `small`, `medium`, `large`, `xlarge`<br>**Default value:** `xsmall`
 | `iconSize`                   | Size of FontAwesome icons<br><br>**Possible values:** `xsmall`, `small`, `medium`, `large`, `xlarge`<br>**Default value:** `small`
-| `msgEmptyList`	           | Display message when no tasks on Download Station<br><br>**Possible values:** Any string you want!<br>**Default value:** `No task`
+//| `msgEmptyList`	           | Display message when no tasks on Download Station<br><br>**Possible values:** Any string you want!<br>**Default value:** `No task`
