@@ -1,14 +1,14 @@
 # Synology Download Station Module for MagicMirror
 Module: MMM-Synology-Download_Station
 
-This [MagicMirror](https://github.com/MichMich/MagicMirror) module, display Synology Download Station tasks.
+This [MagicMirror](https://github.com/MagicMirrorOrg/MagicMirror) module, display Synology Download Station tasks.
 
 compacted mode : <code>bottom_left</code>
 
 ![Synology DS visualisation](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/master/Screenshot/example.png?raw=true)
 
 ## Dependencies 
-- An installation of [MagicMirror<sup>2</sup>](https://github.com/MichMich/MagicMirror)
+- An installation of [MagicMirror<sup>2</sup>](https://github.com/MagicMirrorOrg/MagicMirror)
 
 # Installation
 
