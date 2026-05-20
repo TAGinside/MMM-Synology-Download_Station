@@ -49,7 +49,6 @@ To use this module, add it to the modules array in the `config/config.js` file.
 
 
 ```javascript
-modules: [
   {
     module: "MMM-SynologyDownload_Station",
     position: "bottom_left",
@@ -80,7 +79,6 @@ modules: [
       }
     }
   }
-]
 ```
 
 ## Configuration options
