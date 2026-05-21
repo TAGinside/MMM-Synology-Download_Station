@@ -1,4 +1,4 @@
-# Synology Download Station Module for MagicMirror
+# Synology Download Station Module for MagicMirror [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/TAGinside/MMM-Synology-Download_Station/master/LICENSE)
 Module: MMM-Synology-Download_Station
 
 This [MagicMirror](https://github.com/MagicMirrorOrg/MagicMirror) module, display Synology Download Station tasks.
