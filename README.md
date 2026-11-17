@@ -1,112 +1,123 @@
-# Synology Download Station Module for MagicMirror [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/TAGinside/MMM-Synology-Download_Station/master/LICENSE)
-Module: MMM-Synology-Download_Station
+# MMM-Synology-Download_Station [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/TAGinside/MMM-Synology-Download_Station/master/LICENSE)
 
-This [MagicMirror](https://github.com/MagicMirrorOrg/MagicMirror) module, display Synology Download Station tasks.
+This [MagicMirror²](https://github.com/MagicMirrorOrg/MagicMirror) module displays the tasks of Synology Download Station (status, name, size, progress, download and upload speed).
 
-compacted mode : <code>bottom_left</code>
+![Synology Download Station module](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/master/Screenshot/example.png?raw=true)
 
-![Synology DS visualisation](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/master/Screenshot/example.png?raw=true)
+## Features
 
-## Dependencies 
-- An installation of [MagicMirror<sup>2</sup>](https://github.com/MagicMirrorOrg/MagicMirror)
+- One line per task, with a colored status icon.
+- Choose which columns and which task statuses are shown.
+- The module hides itself when there is nothing to show (can be turned off).
+- One DSM session is kept open and renewed only when it expires.
+- No npm dependency.
 
-# Installation
+## Dependencies
 
-Navigate into your MagicMirror's `modules` folder:
-```
+| Service | Link | Key required? | Limits |
+|---|---|---|---|
+| Synology DSM Web API (`SYNO.API.Auth`, `SYNO.DownloadStation.Task`) | [Download Station Web API](https://global.download.synology.com/download/Document/Software/DeveloperGuide/Package/DownloadStation/All/enu/Synology_Download_Station_Web_API.pdf) | A DSM account allowed to use Download Station | Local network only, no quota |
+
+- An installation of [MagicMirror²](https://github.com/MagicMirrorOrg/MagicMirror).
+- A Synology NAS with the **Download Station** package installed and running.
+- A DSM account with access to Download Station. A dedicated account without admin rights is recommended. 2-step verification must be off for this account.
+
+## Installation
+
+Go to the `modules` folder of MagicMirror²:
+
+```sh
 cd ~/MagicMirror/modules
 ```
 
 Clone this repository:
-```
+
+```sh
 git clone https://github.com/TAGinside/MMM-Synology-Download_Station
 ```
 
-Navigate to the new `MMM-Synology-Download_Station` with:
-```
-cd MMM-Synology-Download_Station
-```
-Install the node dependencies.
-```
-npm install
-```
+Add the module to `~/MagicMirror/config/config.js` (see [Configuration](#configuration)), then check the file and restart MagicMirror²:
 
-Configure the module in your `config.js` file.
+```sh
+cd ~/MagicMirror
+node --run config:check
+```
 
 ## Update
 
 ```sh
 cd ~/MagicMirror/modules/MMM-Synology-Download_Station
 git pull
-npm ci
 ```
-Restart now MagicMirror !
 
+Then restart MagicMirror².
 
-## Using the module
+## Configuration
 
-To use this module, add it to the modules array in the `config/config.js` file. 
-
+Add this block to the `modules` array of `~/MagicMirror/config/config.js`:
 
 ```javascript
-  {
-    module: "MMM-SynologyDownload_Station",
-    position: "bottom_left",
-    header: "Synology Download Station",
-    config: {
-      host: "x.x.x.x",           // IP/DNS your Synology NAS
-      port: 5001,                // Port HTTPS DSM default
-      useHttps: true,            // use HTTPS
-      user: "username",          // username
-      passwd: "password",        // Password
-      refreshInterval: 10,       // in seconds
-      maxItems: 8,
-      compactMode: true,
-      displayColumns: {
-        status_icon: true,
-        title: true,
-        percent_completed: true,
-        size: true,
-        speed_download: true,
-        speed_upload: true
-      },
-      displayTasks: {
-        seeding: true,
-        downloading: true,
-        finished: true,
-        error: true,
-        paused: true
+    {
+      module: "MMM-Synology-Download_Station",
+      position: "bottom_left",
+      header: "Synology Download Station",
+      config: {
+        host: "192.168.1.10",      // IP or hostname of your NAS
+        useHttps: true,            // port 5001 is used when port is not set
+        user: "YOUR_DSM_USER",
+        passwd: "YOUR_DSM_PASSWORD",
+        refreshInterval: 10,       // seconds
+        maxItems: 8
       }
-    }
-  },
+    },
 ```
 
-## Configuration options
+To change the columns or the task statuses, give only the keys you want to change. The other keys keep their default value:
 
-The following properties can be configured:
+```javascript
+      config: {
+        // ...
+        displayColumns: { size: false, speed_upload: false },
+        displayTasks: { finished: false, seeding: false }
+      }
+```
 
-| Option                       | Description
-| ---------------------------- | -----------
-| `host`                       | Synology Hostname/IP.  <br><br>**Required**<br>**Possible values:** `localhost`, `url` or a IP<br>**Default value:** `null`
-| `port`                       | Synology port.  <br><br><br>**Default value:** ` 5001 ` (Default Synology port for HTTPS)
-| `user`                       | Synology account.  <br><br>**Required**<br>**Default value:** `null`
-| `passwd`                     | Account password.  <br><br>**Required**<br>**Default value:** `null`
-| `refreshInterval`            | The refresh interval (in seconds).<br><br>**Default value:** `10`
-| `maxItems`                   | Maxium number displayed tasks<br><br>**Possible values:** `numeric`<br>**Default value:** `5`
-| `compactMode`                | The size of module is reduced. Number of caracters of the task name is limited by `compactMaxLen`<br>**Recommended for:** `top_left`, `top_right`, ` bottom_left`, ` bottom_right`, ` bottom_center`, `middle_center`<br>**Possible values:** `true` or `false`<br>**Default value:** `true`
-| `compactMaxLen`              | Maximum number of caracters of the task name<br><br>**Possible values:** `numeric`<br>**Default value:** `30`
-| `textSize`                   | <br><br>**Possible values:** `xsmall`, `small`, `medium`, `large`, `xlarge`<br>**Default value:** `xsmall`
-| `iconSize`                   | Size of FontAwesome icons<br><br>**Possible values:** `xsmall`, `small`, `medium`, `large`, `xlarge`<br>**Default value:** `small`
+## Options
 
-## Debug info
+| Option | Description | Default |
+|---|---|---|
+| `host` | IP address or hostname of the NAS. **Required.** | `null` |
+| `port` | DSM port. When `null`, `5001` is used with HTTPS and `5000` with HTTP (DSM default ports). | `null` |
+| `useHttps` | Connect to DSM with HTTPS. The self-signed certificate of the NAS is accepted. | `false` |
+| `user` | DSM account. **Required.** | `null` |
+| `passwd` | Password of the DSM account. **Required.** | `null` |
+| `refreshInterval` | Refresh interval in seconds (minimum `5`). | `10` |
+| `maxItems` | Maximum number of tasks displayed. | `5` |
+| `compactMode` | `true`: the task name is cut after `compactMaxLen` characters. `false`: the full name is shown. Recommended for `top_left`, `top_right`, `bottom_left`, `bottom_right`. | `true` |
+| `compactMaxLen` | Maximum number of characters of the task name when `compactMode` is `true`. | `30` |
+| `textSize` | Text size: `xsmall`, `small`, `medium`, `large` or `xlarge`. | `"xsmall"` |
+| `iconSize` | Size of the status icons: `xsmall`, `small`, `medium`, `large` or `xlarge`. | `"small"` |
+| `hideWhenEmpty` | `true`: the module is hidden when there is no task to show or when the NAS cannot be reached. `false`: `msgEmptyList` or the error is displayed. | `true` |
+| `msgEmptyList` | Text displayed when there is no task (only with `hideWhenEmpty: false`). | `"No Download Tasks"` |
+| `displayColumns` | Columns to show: `status_icon`, `title`, `size`, `percent_completed`, `speed_download`, `speed_upload`. | all `true` |
+| `displayTasks` | Task statuses to show: `waiting`, `downloading`, `paused`, `finishing`, `finished`, `hash_checking`, `seeding`, `filehosting_waiting`, `extracting`, `error`. | all `true` |
 
-If you do not see the module displayed, it is possible that either the connection to Synology NAS is not working, or there are no downloads/uploads in progress.
-To help diagnose the issue, I have set up logs as follows:
+Status icons: arrow down (cyan) downloading, arrow up (green) seeding, check (green) finished, pause (gray) paused, hourglass (gray) waiting, rotate (gray) hash checking, spinner / box (cyan) finishing / extracting, triangle (red) error.
 
-if it's OK
-![Debug info OK](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/master/Screenshot/Screenshot_03.png?raw=true)
+## Troubleshooting
 
-if it's No OK
-![Debug info NOK](https://github.com/TAGinside/MMM-Synology-Download_Station/blob/master/Screenshot/Screenshot_04.png?raw=true)
+If the module is not displayed, either the NAS cannot be reached or there is no task to show. Set `hideWhenEmpty: false` to see the message on the mirror, and read the MagicMirror² logs (`pm2 logs` if you start it with pm2, or the terminal):
 
-I will work on the auto-hide feature so that it can be configured in `config.js`. Stay tuned
+| Log line | Meaning |
+|---|---|
+| `connected to <host>` | Login OK. Printed once, then again only when the session has to be renewed. |
+| `login to <host> failed: wrong account or password` | Check `user` and `passwd`. Other reasons: account disabled, 2-step verification required, IP blocked by the NAS (*Control Panel > Security > Protection*). |
+| `no answer from <host>:<port>` or `connect ECONNREFUSED` | Wrong `host`, `port` or `useHttps`, or the NAS is off. |
+| `Download Station error <code>` | Download Station is not installed or not running, or the account has no access to it. |
+| `connection to <host> restored` | The NAS answers again after an error. |
+
+Each error is logged once, not at every refresh.
+
+## License
+
+MIT, see [LICENSE](LICENSE).

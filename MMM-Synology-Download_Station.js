@@ -1,16 +1,19 @@
+/* MMM-Synology-Download_Station : affiche les tâches Download Station d'un NAS Synology. */
 Module.register("MMM-Synology-Download_Station", {
   defaults: {
-    host: null,
-    port: "5000",
+    host: null,             // IP ou nom du NAS (obligatoire)
+    port: null,             // null = 5001 en HTTPS, 5000 en HTTP (ports DSM par défaut)
     useHttps: false,
-    user: null,
-    passwd: null,
-    refreshInterval: 10,
+    user: null,             // compte DSM (obligatoire)
+    passwd: null,           // mot de passe DSM (obligatoire)
+    refreshInterval: 10,    // secondes, minimum 5
     maxItems: 5,
-    compactMode: true,
+    compactMode: true,      // true = titre tronqué à compactMaxLen caractères
     compactMaxLen: 30,
-    textSize: "xsmall",
+    textSize: "xsmall",     // classes de taille du cœur : xsmall, small, medium, large, xlarge
     iconSize: "small",
+    hideWhenEmpty: true,    // true = module masqué quand aucune tâche ; false = affiche msgEmptyList
+    msgEmptyList: "No Download Tasks",
     displayColumns: {
       status_icon: true,
       title: true,
@@ -20,69 +23,144 @@ Module.register("MMM-Synology-Download_Station", {
       speed_upload: true
     },
     displayTasks: {
-      finished: true,
-      downloading: true,
       waiting: true,
-      hash_checking: true,
+      downloading: true,
       paused: true,
+      finishing: true,
+      finished: true,
+      hash_checking: true,
       seeding: true,
+      filehosting_waiting: true,
+      extracting: true,
       error: true
-    },
-    msgEmptyList: "No Download Tasks",
+    }
   },
 
-  start: function() {
-    console.log("[MMM-Synology-Download_Station] Module launched !");
-    this.taskList = [];
-    this.sendSocketNotification("DS_INIT", this.config);
-    this.loaded = false;
+  // Icône Font Awesome et classe de couleur par statut de tâche (statuts de l'API Download Station).
+  statusIcons: {
+    waiting: ["fa-hourglass-half", "ds-gray"],
+    filehosting_waiting: ["fa-hourglass-half", "ds-gray"],
+    downloading: ["fa-arrow-down", "ds-cyan"],
+    paused: ["fa-pause", "ds-gray"],
+    finishing: ["fa-spinner", "ds-cyan"],
+    finished: ["fa-check", "ds-green"],
+    hash_checking: ["fa-rotate", "ds-gray"],
+    seeding: ["fa-arrow-up", "ds-green"],
+    extracting: ["fa-box-open", "ds-cyan"],
+    error: ["fa-triangle-exclamation", "ds-red"]
+  },
+
+  start: function () {
+    // MagicMirror ne fusionne que le premier niveau de config : on complète les sous-objets
+    // avec les défauts pour qu'une config partielle ne masque pas les autres colonnes / statuts.
+    this.config.displayColumns = Object.assign({}, this.defaults.displayColumns, this.config.displayColumns);
+    this.config.displayTasks = Object.assign({}, this.defaults.displayTasks, this.config.displayTasks);
+
+    this.tasks = null;   // null = pas encore de réponse du NAS
+    this.error = null;
+    this.timer = null;
+    this.hiddenWhenEmpty = false;
+
+    this.fetchTasks();
     this.scheduleUpdate();
   },
 
-  scheduleUpdate: function() {
-    setInterval(() => {
-      this.sendSocketNotification("DS_GET", this.config);
-    }, this.config.refreshInterval * 1000);
+  getStyles: function () {
+    // Font Awesome n'est pas chargé par le cœur : chaque module qui l'utilise doit le demander.
+    return ["font-awesome.css", "css/MMM-Synology-Download_Station.css"];
   },
 
-  getDom: function() {
-    var wrapper = document.createElement("div");
-    wrapper.className = "MMM-Synology-Download_Station";
-    
-    if (!this.loaded) {
-      wrapper.innerHTML = "Searching for tasks...";
+  // Un seul node_helper pour toutes les instances : on envoie identifier + config.
+  fetchTasks: function () {
+    this.sendSocketNotification("DS_FETCH", { identifier: this.identifier, config: this.config });
+  },
+
+  scheduleUpdate: function () {
+    clearInterval(this.timer);
+    const seconds = Math.max(5, Number(this.config.refreshInterval) || 10);
+    this.timer = setInterval(() => this.fetchTasks(), seconds * 1000);
+  },
+
+  // Module masqué (par nous ou par un autre module) : plus d'appel au NAS.
+  suspend: function () {
+    clearInterval(this.timer);
+    this.timer = null;
+  },
+
+  resume: function () {
+    // Réaffiché par notre show() : le timer tourne déjà (voir updateVisibility).
+    if (this.timer) return;
+    this.fetchTasks();
+    this.scheduleUpdate();
+  },
+
+  socketNotificationReceived: function (notification, payload) {
+    if (!payload || payload.identifier !== this.identifier) return; // réponse d'une autre instance
+
+    if (notification === "DS_RESULT") {
+      this.tasks = payload.tasks;
+      this.error = null;
+    } else if (notification === "DS_ERROR") {
+      Log.error(`[${this.name}] ${payload.message}`);
+      this.tasks = [];
+      this.error = payload.message;
+    } else {
+      return;
+    }
+    this.updateDom(1000);
+    this.updateVisibility();
+  },
+
+  // Masque le module quand il n'y a rien à montrer (liste vide ou erreur), si hideWhenEmpty.
+  updateVisibility: function () {
+    if (!this.config.hideWhenEmpty) return;
+    const empty = this.tasks.length === 0;
+    // hide() appelle suspend() : on relance le timer dans le callback pour détecter
+    // l'arrivée d'une nouvelle tâche. Le lockString n'est retiré que par notre show().
+    if (empty && !this.hiddenWhenEmpty) {
+      this.hiddenWhenEmpty = true;
+      this.hide(1000, () => {
+        if (!this.timer) this.scheduleUpdate();
+      }, { lockString: this.identifier });
+    } else if (!empty && this.hiddenWhenEmpty) {
+      this.hiddenWhenEmpty = false;
+      this.show(1000, () => {}, { lockString: this.identifier });
+    }
+  },
+
+  getDom: function () {
+    const wrapper = document.createElement("div");
+    wrapper.className = this.config.textSize;
+
+    if (this.tasks === null) {
+      wrapper.classList.add("dimmed");
+      wrapper.textContent = "Searching for tasks...";
       return wrapper;
     }
 
-    if (this.taskList.length === 0) {
-      wrapper.innerHTML = this.config.msgEmptyList;
+    if (this.error) {
+      wrapper.classList.add("dimmed");
+      wrapper.textContent = `Synology error: ${this.error}`;
       return wrapper;
     }
 
-    var table = document.createElement("table");
-    table.className = this.config.textSize;
+    if (this.tasks.length === 0) {
+      wrapper.classList.add("dimmed");
+      wrapper.textContent = this.config.msgEmptyList;
+      return wrapper;
+    }
 
-    this.taskList.forEach((task) => {
-      var row = document.createElement("tr");
+    const cols = this.config.displayColumns;
+    const table = document.createElement("table");
 
-      if (this.config.displayColumns.status_icon)
-        row.appendChild(this._iconCell(task));
-
-      if (this.config.displayColumns.title)
-        row.appendChild(this._textCell(task.title, this.config.compactMaxLen));
-
-      if (this.config.displayColumns.size)
-        row.appendChild(this._textCell(this._formatBytes(task.size), 15));
-
-      if (this.config.displayColumns.percent_completed)
-        row.appendChild(this._textCell(task.percent_completed + " %", 6));
-
-      if (this.config.displayColumns.speed_download)
-        row.appendChild(this._textCell(this._formatBytes(task.speed_download) + "/s", 10));
-
-      if (this.config.displayColumns.speed_upload)
-        row.appendChild(this._textCell(this._formatBytes(task.speed_upload) + "/s", 10));
-
+    this.tasks.forEach((task) => {
+      const row = document.createElement("tr");
+      if (cols.status_icon) row.appendChild(this.iconCell(task.status));
+      if (cols.title) row.appendChild(this.textCell(this.shortTitle(task.title), "ds-title"));
+      if (cols.size) row.appendChild(this.textCell(this.formatBytes(task.size)));
+      if (cols.percent_completed) row.appendChild(this.textCell(`${task.percent_completed} %`));
+      if (cols.speed_download) row.appendChild(this.textCell(`${this.formatBytes(task.speed_download)}/s`));
+      if (cols.speed_upload) row.appendChild(this.textCell(`${this.formatBytes(task.speed_upload)}/s`));
       table.appendChild(row);
     });
 
@@ -90,81 +168,35 @@ Module.register("MMM-Synology-Download_Station", {
     return wrapper;
   },
 
-  _iconCell: function(task) {
-    var cell = document.createElement("td");
-    var icon = document.createElement("i");
-    let iconClass = '';
-    let iconColor = '';
-
-    if (task.status === "downloading") {
-      iconClass = "fa fa-arrow-down";
-      iconColor = "cyan"; // Couleur pour téléchargement
-    } else if (task.status === "seeding") {
-      iconClass = "fa fa-arrow-up";
-      iconColor = "green"; // Couleur pour partage
-    } else if (task.status === "error") {
-      iconClass = "fa fa-exclamation-triangle"; // Icône d'erreur
-      iconColor = "red"; // Couleur pour erreur
-    } else if (task.status === "paused") {
-      iconClass = "fa fa-pause"; // Icône pause
-      iconColor = "gray";        // Couleur pour pause
-    } else {
-      iconClass = "fa fa-question-circle"; // Par défaut
-      iconColor = "gray";
-    }
-
-    icon.className = iconClass;
-    icon.style.color = iconColor; // Définition couleur en inline style depuis JS
-    cell.appendChild(icon);
+  iconCell: function (status) {
+    const [icon, color] = this.statusIcons[status] || ["fa-circle-question", "ds-gray"];
+    const cell = document.createElement("td");
+    const i = document.createElement("i");
+    i.className = `fa-solid ${icon} ${color} ${this.config.iconSize}`;
+    i.title = status;
+    cell.appendChild(i);
     return cell;
   },
 
-  _textCell: function(text, maxLen) {
-    var cell = document.createElement("td");
-    cell.innerHTML = typeof text === "string" && text.length > maxLen ? text.substring(0, maxLen) + "..." : text;
+  // textContent et non innerHTML : le titre vient du NAS et ne doit pas être interprété comme du HTML.
+  textCell: function (text, className) {
+    const cell = document.createElement("td");
+    if (className) cell.className = className;
+    cell.textContent = text;
     return cell;
   },
 
-  _formatBytes: function(bytes) {
-    if (bytes < 1024) return bytes + " B";
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-    if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(1) + " MB";
-    return (bytes / 1024 / 1024 / 1024).toFixed(1) + " GB";
+  shortTitle: function (title) {
+    const text = String(title ?? "");
+    const max = this.config.compactMaxLen;
+    return this.config.compactMode && text.length > max ? `${text.substring(0, max)}...` : text;
   },
 
-  socketNotificationReceived: function(notification, payload) {
-    if (notification === "DS_RESULT") {
-      console.log("[MMM-Synology-Download_Station] Synology-NAS Task Received :", payload.length);
-      this.taskList = payload;
-      this.loaded = true;
-      
-      // Afficher/Cacher module selon la présence de tâches
-      if (this.taskList.length === 0) {
-        this.hide(1000); // Cache le module sur 1 seconde
-      } else {
-        this.show(1000); // Affiche le module sur 1 seconde
-        this.updateDom();
-      }
-
-      // Log pourcentage pour chaque tâche reçue
-      payload.forEach(task => {
-        console.log(`[MMM-Synology-Download_Station] ${task.title} - ${task.percent_completed}%`);
-      });
-
-      // Log pour téléchargement actif
-      payload.forEach(task => {
-        if (task.status === "downloading") {
-          console.log(`[MMM-Synology-Download_Station] Active Download : ${task.title} (${task.percent_completed}%)`);
-        }
-      });
-    }
-    if (notification === "DS_ERROR") {
-      console.log("[MMM-Synology-Download_Station] Synology-NAS Error:", payload);
-      this.loaded = false;
-      this.taskList = [];
-      this.updateDom();
-      this.hide(1000);
-    }
+  formatBytes: function (bytes) {
+    const value = Number(bytes) || 0;
+    if (value < 1024) return `${value} B`;
+    if (value < 1024 ** 2) return `${(value / 1024).toFixed(1)} KB`;
+    if (value < 1024 ** 3) return `${(value / 1024 ** 2).toFixed(1)} MB`;
+    return `${(value / 1024 ** 3).toFixed(1)} GB`;
   }
 });
-// End of file

@@ -1,24 +1,32 @@
+/* Styles du module, limités à sa classe (ajoutée par MagicMirror sur le conteneur du module). */
 .MMM-Synology-Download_Station table {
-  width: 100%;
   border-collapse: collapse;
-  font-size: 0.85em;
 }
 
 .MMM-Synology-Download_Station td {
-  padding: 3px 8px;
-  border-bottom: 1px solid #444;
+  padding: 0 4px;
+  white-space: nowrap;
+  text-align: left;
 }
 
-.MMM-Synology-Download_Station .fa {
-  margin-right: 6px;
-  font-size: 1.2em;
+/* Titre complet quand compactMode est à false : il peut passer à la ligne. */
+.MMM-Synology-Download_Station td.ds-title {
+  white-space: normal;
 }
 
-/* Tailles de texte */
-.MMM-Synology-Download_Station .xsmall {
-  font-size: 0.83em;
+/* Couleurs des icônes de statut */
+.MMM-Synology-Download_Station .ds-cyan {
+  color: cyan;
 }
 
-.MMM-Synology-Download_Station .small {
-  font-size: 0.96em;
+.MMM-Synology-Download_Station .ds-green {
+  color: limegreen;
+}
+
+.MMM-Synology-Download_Station .ds-red {
+  color: red;
+}
+
+.MMM-Synology-Download_Station .ds-gray {
+  color: gray;
 }
