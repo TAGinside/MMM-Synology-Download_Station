@@ -67,7 +67,8 @@ Module.register("MMM-Synology-Download_Station", {
 
   getStyles: function () {
     // Font Awesome n'est pas chargé par le cœur : chaque module qui l'utilise doit le demander.
-    return ["font-awesome.css", "css/MMM-Synology-Download_Station.css"];
+    // this.file() obligatoire : un chemin avec « / » serait cherché à la racine de MagicMirror.
+    return ["font-awesome.css", this.file("css/MMM-Synology-Download_Station.css")];
   },
 
   // Un seul node_helper pour toutes les instances : on envoie identifier + config.
@@ -101,7 +102,8 @@ Module.register("MMM-Synology-Download_Station", {
       this.tasks = payload.tasks;
       this.error = null;
     } else if (notification === "DS_ERROR") {
-      Log.error(`[${this.name}] ${payload.message}`);
+      // La console du navigateur finit dans les logs pm2 : une ligne par erreur différente seulement.
+      if (payload.message !== this.error) Log.error(`[${this.name}] ${payload.message}`);
       this.tasks = [];
       this.error = payload.message;
     } else {

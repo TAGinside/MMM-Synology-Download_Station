@@ -23,7 +23,7 @@ module.exports = NodeHelper.create({
   start: function () {
     // Une session DSM par instance du module (clé = identifier du module).
     this.sessions = {};
-    Log.log(`[${this.name}] node_helper started`);
+    Log.log(`node_helper started`);
   },
 
   stop: function () {
@@ -46,13 +46,13 @@ module.exports = NodeHelper.create({
     // try/catch obligatoire : une exception non attrapée ferait tomber tout MagicMirror.
     try {
       const tasks = await this.getTasks(session, config);
-      if (session.lastError) Log.log(`[${this.name}] connection to ${config.host} restored`);
+      if (session.lastError) Log.log(`connection to ${config.host} restored`);
       session.lastError = null;
       this.sendSocketNotification("DS_RESULT", { identifier, tasks });
     } catch (error) {
       const message = error.message || String(error);
       // Une seule ligne de log par erreur différente, pas une toutes les 10 secondes.
-      if (message !== session.lastError) Log.error(`[${this.name}] ${message}`);
+      if (message !== session.lastError) Log.error(message);
       session.lastError = message;
       this.sendSocketNotification("DS_ERROR", { identifier, message });
     } finally {
@@ -122,7 +122,7 @@ module.exports = NodeHelper.create({
       throw new Error(`login to ${config.host} failed: ${LOGIN_ERRORS[code] || `error ${code ?? "unknown"}`}`);
     }
     session.sid = response.data.sid;
-    Log.log(`[${this.name}] connected to ${config.host}`);
+    Log.log(`connected to ${config.host}`);
   },
 
   logout: async function (session) {

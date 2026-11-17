@@ -6,7 +6,6 @@
 .MMM-Synology-Download_Station td {
   padding: 0 4px;
   white-space: nowrap;
-  text-align: left;
 }
 
 /* Titre complet quand compactMode est à false : il peut passer à la ligne. */
