@@ -5,6 +5,10 @@ const http = require("node:http");
 const https = require("node:https");
 
 const TIMEOUT = 10000; // ms avant d'abandonner une requête vers le NAS
+// Le login DSM est lent (1 à 3 s NAS chaud, plus de 10 s mesurés au démarrage du miroir,
+// quand le Pi est chargé) : on lui laisse plus de temps. Il n'a lieu qu'au démarrage
+// ou quand la session expire, donc ça ne ralentit pas les rafraîchissements.
+const LOGIN_TIMEOUT = 30000;
 
 // Codes DSM « session invalide ou expirée » : on se reconnecte et on réessaie une fois.
 const SESSION_ERRORS = [105, 106, 107, 119];
@@ -116,7 +120,7 @@ module.exports = NodeHelper.create({
       passwd: config.passwd,
       session: "DownloadStation",
       format: "sid"
-    });
+    }, LOGIN_TIMEOUT);
     if (!response.success || !response.data?.sid) {
       const code = response.error?.code;
       throw new Error(`login to ${config.host} failed: ${LOGIN_ERRORS[code] || `error ${code ?? "unknown"}`}`);
@@ -138,7 +142,7 @@ module.exports = NodeHelper.create({
   },
 
   // GET vers /webapi/<cgi> avec les modules natifs de Node (pas de dépendance npm).
-  request: function (config, cgi, params) {
+  request: function (config, cgi, params, timeout = TIMEOUT) {
     const secure = Boolean(config.useHttps);
     const port = config.port || (secure ? 5001 : 5000);
     const options = {
@@ -146,7 +150,7 @@ module.exports = NodeHelper.create({
       port,
       path: `/webapi/${cgi}?${new URLSearchParams(params)}`,
       method: "GET",
-      timeout: TIMEOUT,
+      timeout,
       // Le certificat d'un NAS est souvent auto-signé : on l'accepte (réseau local).
       rejectUnauthorized: false
     };

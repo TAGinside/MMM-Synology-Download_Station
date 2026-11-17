@@ -112,7 +112,7 @@ If the module is not displayed, either the NAS cannot be reached or there is no 
 |---|---|
 | `connected to <host>` | Login OK. Printed once, then again only when the session has to be renewed. |
 | `login to <host> failed: wrong account or password` | Check `user` and `passwd`. Other reasons: account disabled, 2-step verification required, IP blocked by the NAS (*Control Panel > Security > Protection*). |
-| `no answer from <host>:<port>` or `connect ECONNREFUSED` | Wrong `host`, `port` or `useHttps`, or the NAS is off. |
+| `no answer from <host>:<port>` or `connect ECONNREFUSED` | Wrong `host`, `port` or `useHttps`, or the NAS is off. The module waits 10 s for an answer (30 s for the login, which is slow while MagicMirror starts). |
 | `Download Station error <code>` | Download Station is not installed or not running, or the account has no access to it. |
 | `connection to <host> restored` | The NAS answers again after an error. |
 
